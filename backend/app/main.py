@@ -1,6 +1,5 @@
 from fastapi import FastAPI
-
-from app.routers import sitios
+from app.routers import sitios, chequeos
 
 app = FastAPI(
     title="Monitoreo Web ConsigueVentas",
@@ -9,6 +8,7 @@ app = FastAPI(
 )
 
 app.include_router(sitios.router)
+app.include_router(chequeos.router)
 
 
 @app.get("/")
