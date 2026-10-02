@@ -24,4 +24,4 @@ def crear_sitio(sitio: SitioCrear, db: Session = Depends(get_db)):
 
 @router.get("/", response_model=List[SitioRespuesta])
 def listar_sitios(db: Session = Depends(get_db)):
-    return db.query(Sitio).all()
+    return db.query(Sitio).all()    

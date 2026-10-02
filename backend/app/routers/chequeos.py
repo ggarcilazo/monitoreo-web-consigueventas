@@ -55,3 +55,35 @@ def historial_chequeos(sitio_id: int, db: Session = Depends(get_db)):
         .order_by(Chequeo.ejecutado_en.desc())
         .all()
     )
+
+@router.post("/ejecutar-todos")
+def ejecutar_todos_los_chequeos(db: Session = Depends(get_db)):
+    sitios_activos = db.query(Sitio).filter(Sitio.activo == True).all()
+
+    resultados = []
+    for sitio in sitios_activos:
+        resultado_disp = verificar_disponibilidad(sitio.url)
+        resultado_ssl = verificar_ssl(sitio.url)
+        resultado_completo = {**resultado_disp, **resultado_ssl}
+
+        nuevo_chequeo = Chequeo(
+            sitio_id=sitio.id,
+            **resultado_completo,
+            puntaje_pagespeed=None,
+        )
+        db.add(nuevo_chequeo)
+        db.commit()
+        db.refresh(nuevo_chequeo)
+
+        evaluar_y_alertar(sitio.nombre_cliente, sitio.url, resultado_completo)
+
+        resultados.append({
+            "sitio_id": sitio.id,
+            "nombre_cliente": sitio.nombre_cliente,
+            "disponible": resultado_completo["disponible"],
+        })
+
+    return {
+        "total_chequeados": len(resultados),
+        "resultados": resultados,
+    }
