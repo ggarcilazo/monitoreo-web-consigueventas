@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Monitor ConsigueVentas</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header>
+    <div>
+      <h1>Monitor de sitios web</h1>
+      <p>Agencia de marketing digital · Estado en tiempo real</p>
+    </div>
+    <button id="btn-chequear-todos">Chequear todos</button>
+  </header>
+
+  <div class="resumen">
+    <div class="stat">
+      <div class="valor" id="stat-total">—</div>
+      <div class="etiqueta">Sitios registrados</div>
+    </div>
+    <div class="stat">
+      <div class="valor" id="stat-ok">—</div>
+      <div class="etiqueta">Disponibles</div>
+    </div>
+    <div class="stat">
+      <div class="valor" id="stat-caidos">—</div>
+      <div class="etiqueta">Caídos</div>
+    </div>
+  </div>
+
+  <div class="sitios" id="sitios"></div>
+
+  <script src="assets/js/dashboard.js"></script>
+</body>
+</html>
