@@ -1,1 +1,17 @@
+name: Chequeo programado de sitios
 
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  ejecutar-chequeo:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Llamar al endpoint de chequeo masivo
+        run: |
+          curl -X POST https://consigueventas.duckdns.org/api/chequeos/ejecutar-todos \
+            --fail \
+            --silent \
+            --show-error
