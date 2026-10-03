@@ -4,33 +4,43 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Monitor ConsigueVentas</title>
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="assets/img/favicon.png">
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-  <header>
-    <div>
-      <h1>Monitor de sitios web</h1>
-      <p>Agencia de marketing digital · Estado en tiempo real</p>
-    </div>
-    <button id="btn-chequear-todos">Chequear todos</button>
-  </header>
+  <div class="container">
+    <header>
+      <div class="marca">
+        <img src="assets/img/logo.png" alt="ConsigueVentas" class="logo">
+        <div>
+          <h1>Monitor de sitios web</h1>
+          <p>Agencia de marketing digital · Estado en tiempo real</p>
+        </div>
+      </div>
+      <button id="btn-chequear-todos">Chequear todos</button>
+    </header>
 
-  <div class="resumen">
-    <div class="stat">
-      <div class="valor" id="stat-total">—</div>
-      <div class="etiqueta">Sitios registrados</div>
+    <div class="resumen">
+      <div class="stat">
+        <div class="valor" id="stat-total">—</div>
+        <div class="etiqueta">Sitios registrados</div>
+      </div>
+      <div class="stat stat-ok">
+        <div class="valor" id="stat-ok">—</div>
+        <div class="etiqueta">Disponibles</div>
+      </div>
+      <div class="stat stat-error">
+        <div class="valor" id="stat-caidos">—</div>
+        <div class="etiqueta">Caídos</div>
+      </div>
     </div>
-    <div class="stat">
-      <div class="valor" id="stat-ok">—</div>
-      <div class="etiqueta">Disponibles</div>
-    </div>
-    <div class="stat">
-      <div class="valor" id="stat-caidos">—</div>
-      <div class="etiqueta">Caídos</div>
-    </div>
+
+    <div class="sitios" id="sitios"></div>
   </div>
-
-  <div class="sitios" id="sitios"></div>
 
   <script src="assets/js/dashboard.js"></script>
 </body>

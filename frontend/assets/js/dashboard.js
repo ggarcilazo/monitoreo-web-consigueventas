@@ -63,26 +63,25 @@ function renderSitios(sitios, ultimosChequeos) {
     }
 
     card.innerHTML = `
-      <div class="sitio-header" data-id="${sitio.id}">
-        <div class="sitio-info">
-          <span class="estado-punto ${estadoClase}"></span>
-          <div class="sitio-textos">
-            <div class="sitio-nombre">${sitio.nombre_cliente}</div>
-            <div class="sitio-url">${sitio.url}</div>
-          </div>
-        </div>
-        <div class="sitio-metricas">
-          <span>${estadoTexto}</span>
-          <span>Resp: <strong>${ultimo?.tiempo_respuesta_ms ?? "—"} ms</strong></span>
-          <span>SSL: <strong>${ultimo?.ssl_dias_restantes ?? "—"} días</strong></span>
-        </div>
-        <div class="sitio-acciones">
-          <button class="secondary btn-chequear" data-id="${sitio.id}">Chequear ahora</button>
-        </div>
+  <div class="sitio-header ${estadoClase === 'sin-datos' ? '' : estadoClase}" data-id="${sitio.id}">
+    <div class="sitio-info">
+      <div class="sitio-textos">
+        <div class="sitio-nombre">${sitio.nombre_cliente}</div>
+        <div class="sitio-url">${sitio.url}</div>
       </div>
-      <div class="historial" id="historial-${sitio.id}">
-        <div class="estado-carga">Cargando historial...</div>
-      </div>
+    </div>
+    <div class="sitio-metricas">
+      <span class="badge ${estadoClase === 'sin-datos' ? '' : estadoClase}">${estadoTexto}</span>
+      <span>Resp: <strong>${ultimo?.tiempo_respuesta_ms ?? "—"} ms</strong></span>
+      <span>SSL: <strong>${ultimo?.ssl_dias_restantes ?? "—"} días</strong></span>
+    </div>
+    <div class="sitio-acciones">
+      <button class="secondary btn-chequear" data-id="${sitio.id}">Chequear ahora</button>
+    </div>
+  </div>
+  <div class="historial" id="historial-${sitio.id}">
+    <div class="estado-carga">Cargando historial...</div>
+  </div>
     `;
 
     contenedorSitios.appendChild(card);
