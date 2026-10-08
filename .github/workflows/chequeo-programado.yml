@@ -2,7 +2,7 @@ name: Chequeo programado de sitios
 
 on:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '0 8 * * *'     # una vez al día, a las 8am UTC
   workflow_dispatch:
 
 jobs:

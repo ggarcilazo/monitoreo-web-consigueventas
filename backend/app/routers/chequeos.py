@@ -13,28 +13,41 @@ from app.services.alertas import evaluar_y_alertar
 router = APIRouter(prefix="/chequeos", tags=["Chequeos"])
 
 
+def hubo_cambio_de_estado(db: Session, sitio_id: int, disponible_ahora: bool) -> bool:
+    """
+    Compara el chequeo actual contra el inmediatamente anterior.
+    Devuelve True solo si el estado 'disponible' cambió (o si es el primer chequeo).
+    Esto evita que el sistema alerte repetidamente mientras un sitio
+    permanece en el mismo estado.
+    """
+    anterior = (
+        db.query(Chequeo)
+        .filter(Chequeo.sitio_id == sitio_id)
+        .order_by(Chequeo.ejecutado_en.desc())
+        .offset(1)
+        .first()
+    )
+    if anterior is None:
+        return True
+    return anterior.disponible != disponible_ahora
+
+
 @router.post("/ejecutar/{sitio_id}", response_model=ChequeoRespuesta, status_code=status.HTTP_201_CREATED)
 def ejecutar_chequeo(sitio_id: int, db: Session = Depends(get_db)):
-    # 1. Verificar si el sitio existe
     sitio = db.query(Sitio).filter(Sitio.id == sitio_id).first()
     if not sitio:
         raise HTTPException(status_code=404, detail="Sitio no encontrado")
 
-    # 2. Ejecutar los análisis externos
     resultado_disp = verificar_disponibilidad(sitio.url)
     resultado_ssl = verificar_ssl(sitio.url)
-
-    # 3. Combinar resultados y procesar alertas de Telegram
     resultado_completo = {**resultado_disp, **resultado_ssl}
-    evaluar_y_alertar(sitio.nombre_cliente, sitio.url, resultado_completo)
 
-    # 4. Guardar el historial en la base de datos
     nuevo_chequeo = Chequeo(
         sitio_id=sitio.id,
-        **resultado_completo,  # 💡 Corregido: Desempaqueta el diccionario ya unificado
+        **resultado_completo,
         puntaje_pagespeed=None,
     )
-    
+
     try:
         db.add(nuevo_chequeo)
         db.commit()
@@ -42,19 +55,12 @@ def ejecutar_chequeo(sitio_id: int, db: Session = Depends(get_db)):
     except Exception as e:
         db.rollback()
         raise HTTPException(status_code=500, detail=f"Error al guardar el chequeo: {str(e)}")
-    
+
+    if hubo_cambio_de_estado(db, sitio.id, resultado_completo["disponible"]):
+        evaluar_y_alertar(sitio.nombre_cliente, sitio.url, resultado_completo)
+
     return nuevo_chequeo
 
-
-@router.get("/sitio/{sitio_id}", response_model=List[ChequeoRespuesta])
-def historial_chequeos(sitio_id: int, db: Session = Depends(get_db)):
-    # Opcional: Podrías validar aquí también si el sitio existe antes de traer la lista vacía
-    return (
-        db.query(Chequeo)
-        .filter(Chequeo.sitio_id == sitio_id)
-        .order_by(Chequeo.ejecutado_en.desc())
-        .all()
-    )
 
 @router.post("/ejecutar-todos")
 def ejecutar_todos_los_chequeos(db: Session = Depends(get_db)):
@@ -75,7 +81,8 @@ def ejecutar_todos_los_chequeos(db: Session = Depends(get_db)):
         db.commit()
         db.refresh(nuevo_chequeo)
 
-        evaluar_y_alertar(sitio.nombre_cliente, sitio.url, resultado_completo)
+        if hubo_cambio_de_estado(db, sitio.id, resultado_completo["disponible"]):
+            evaluar_y_alertar(sitio.nombre_cliente, sitio.url, resultado_completo)
 
         resultados.append({
             "sitio_id": sitio.id,
@@ -87,3 +94,13 @@ def ejecutar_todos_los_chequeos(db: Session = Depends(get_db)):
         "total_chequeados": len(resultados),
         "resultados": resultados,
     }
+
+
+@router.get("/sitio/{sitio_id}", response_model=List[ChequeoRespuesta])
+def historial_chequeos(sitio_id: int, db: Session = Depends(get_db)):
+    return (
+        db.query(Chequeo)
+        .filter(Chequeo.sitio_id == sitio_id)
+        .order_by(Chequeo.ejecutado_en.desc())
+        .all()
+    )
