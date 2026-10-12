@@ -11,4 +11,5 @@ class Sitio(Base):
     nombre_cliente = Column(String(150), nullable=False)
     url = Column(String(255), nullable=False, unique=True)
     activo = Column(Boolean, default=True)
+    oculto = Column(Boolean, default=False)
     creado_en = Column(DateTime(timezone=True), server_default=func.now())

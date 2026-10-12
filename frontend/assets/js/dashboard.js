@@ -13,6 +13,7 @@ async function cargarSitios() {
   try {
     const resp = await fetch(`${API_BASE}/sitios/`);
     sitiosCache = await resp.json();
+    sitiosCache = sitiosCache.filter(s => !s.oculto);
 
     if (sitiosCache.length === 0) {
       contenedorSitios.innerHTML = `<div class="estado-vacio">Aún no hay sitios registrados.</div>`;
