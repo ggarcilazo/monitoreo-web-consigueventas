@@ -31,6 +31,17 @@ def hubo_cambio_de_estado(db: Session, sitio_id: int, disponible_ahora: bool) ->
         return True
     return anterior.disponible != disponible_ahora
 
+def ssl_cambio_de_dias(db: Session, sitio_id: int, dias_ahora) -> bool:
+    anterior = (
+        db.query(Chequeo)
+        .filter(Chequeo.sitio_id == sitio_id)
+        .order_by(Chequeo.ejecutado_en.desc())
+        .offset(1)
+        .first()
+    )
+    if anterior is None:
+        return True
+    return anterior.ssl_dias_restantes != dias_ahora
 
 @router.post("/ejecutar/{sitio_id}", response_model=ChequeoRespuesta, status_code=status.HTTP_201_CREATED)
 def ejecutar_chequeo(sitio_id: int, db: Session = Depends(get_db)):
@@ -87,6 +98,7 @@ def ejecutar_todos_los_chequeos(db: Session = Depends(get_db)):
             "disponible": resultado_completo["disponible"],
             "codigo": resultado_completo.get("codigo_http"),
             "ssl_dias": resultado_completo.get("ssl_dias_restantes"),
+            "ssl_cambio": ssl_cambio_de_dias(db, sitio.id, resultado_completo.get("ssl_dias_restantes")),
             "cambio": hubo_cambio_de_estado(db, sitio.id, resultado_completo["disponible"]),
         })
 

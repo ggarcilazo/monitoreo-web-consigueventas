@@ -77,8 +77,7 @@ def enviar_resumen(resultados: list[dict]) -> bool:
     caidos_ahora = [r for r in resultados if not r["disponible"]]
     nuevos_caidos = [r for r in caidos_ahora if r["cambio"]]
     recuperados = [r for r in resultados if r["disponible"] and r["cambio"]]
-    ssl_por_vencer = [r for r in resultados if r["ssl_dias"] is not None and r["ssl_dias"] <= 15]
-
+    ssl_por_vencer = [r for r in resultados if r["ssl_dias"] is not None and r["ssl_dias"] <= 15 and r["ssl_cambio"]]
     if not (nuevos_caidos or recuperados or ssl_por_vencer):
         return False
 
