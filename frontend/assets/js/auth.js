@@ -21,12 +21,28 @@ function cerrarSesion() {
 }
 
 async function iniciarSesion(email, password) {
-  const r = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY },
-    body: JSON.stringify({ email, password }),
-  });
-  if (!r.ok) throw new Error("Correo o contraseña incorrectos");
+  let r;
+  try {
+    r = await fetch(`${SUPABASE_URL}/auth/v1/token?grant_type=password`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: SUPABASE_KEY },
+      body: JSON.stringify({ email, password }),
+    });
+  } catch {
+    throw new Error("No se pudo conectar con el servidor de acceso. Revisa tu conexión.");
+  }
+
+  if (!r.ok) {
+    let d = {};
+    try { d = await r.json(); } catch {}
+    console.error("Login Supabase:", r.status, d);
+    const codigo = d.error_code || d.code || "";
+    const detalle = d.msg || d.error_description || d.message || "";
+    if (codigo === "invalid_credentials") throw new Error("Correo o contraseña incorrectos");
+    if (codigo === "email_not_confirmed") throw new Error("Este usuario aún no está confirmado en Supabase");
+    throw new Error(`No se pudo ingresar (${r.status}): ${detalle || codigo || "error desconocido"}`);
+  }
+
   guardarSesion(await r.json());
 }
 
