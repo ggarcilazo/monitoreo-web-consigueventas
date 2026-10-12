@@ -3,120 +3,284 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ingresar · Monitor ConsigueVentas</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="color-scheme" content="dark">
+  <title>Iniciar sesión · Monitor ConsigueVentas</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="icon" type="image/png" href="assets/img/favicon.png">
-  <link rel="stylesheet" href="assets/css/style.css">
   <style>
-    html { min-height: 100%; }
+    * { box-sizing: border-box; }
+    html, body { height: 100%; }
     body {
-      min-height: 100vh;
       margin: 0;
-      padding: 24px;
-      box-sizing: border-box;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      background: #0b1018;
+      color: #e8edf5;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .pantalla {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+      min-height: 100vh;
+    }
+
+    /* ---------- Panel izquierdo (marca) ---------- */
+    .panel-marca {
+      position: relative;
+      overflow: hidden;
       display: flex;
-      align-items: center;
-      justify-content: center;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 44px 56px 36px;
+      background: linear-gradient(160deg, #0c1420 0%, #0a0f18 60%, #0b1018 100%);
+      border-right: 1px solid rgba(255, 255, 255, .06);
+    }
+    .panel-marca::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255, 255, 255, .05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, .05) 1px, transparent 1px);
+      background-size: 44px 44px;
+      -webkit-mask-image: radial-gradient(ellipse at 30% 35%, #000 15%, transparent 75%);
+      mask-image: radial-gradient(ellipse at 30% 35%, #000 15%, transparent 75%);
+      pointer-events: none;
+    }
+    .orbe { position: absolute; border-radius: 50%; filter: blur(90px); pointer-events: none; }
+    .orbe-1 { width: 380px; height: 380px; background: #1f9d8a; top: -120px; left: -90px; opacity: .30; animation: flotar 16s ease-in-out infinite; }
+    .orbe-2 { width: 320px; height: 320px; background: #2563eb; bottom: -110px; right: -70px; opacity: .17; animation: flotar 21s ease-in-out infinite reverse; }
+    @keyframes flotar { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(34px, 26px); } }
+
+    .marca-top, .marca-centro, .marca-pulso, .marca-pie { position: relative; z-index: 1; }
+
+    .marca-top { display: flex; align-items: center; gap: 14px; }
+    .marca-top img, .marca-movil img { width: 44px; height: 44px; border-radius: 11px; }
+    .marca-nombre { font-weight: 700; font-size: 1.02rem; letter-spacing: .01em; }
+    .marca-nombre small { display: block; font-weight: 500; font-size: .78rem; color: #8b97ad; margin-top: 2px; }
+
+    .marca-centro { max-width: 520px; }
+    .marca-centro h2 { margin: 0 0 14px; font-size: 2.15rem; line-height: 1.18; font-weight: 700; letter-spacing: -.02em; }
+    .marca-centro h2 span { color: #67d4c1; }
+    .marca-centro > p { margin: 0 0 32px; color: #93a0b8; font-size: 1.02rem; line-height: 1.6; }
+
+    .caracteristicas { list-style: none; margin: 0; padding: 0; display: grid; gap: 16px; }
+    .caracteristicas li { display: flex; align-items: center; gap: 14px; color: #c3ccdb; font-size: .95rem; }
+    .icono-car {
+      flex: 0 0 auto; width: 38px; height: 38px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(103, 212, 193, .10); border: 1px solid rgba(103, 212, 193, .22); color: #67d4c1;
+    }
+
+    .marca-pulso svg { width: 100%; height: 72px; display: block; overflow: visible; }
+    .pulso-base { fill: none; stroke: rgba(255, 255, 255, .10); stroke-width: 2; }
+    .pulso-vivo {
+      fill: none; stroke: #67d4c1; stroke-width: 2.5; stroke-linecap: round; stroke-linejoin: round;
+      stroke-dasharray: 16 84; stroke-dashoffset: 100;
+      filter: drop-shadow(0 0 6px rgba(103, 212, 193, .8));
+      animation: latido 3.2s linear infinite;
+    }
+    @keyframes latido { to { stroke-dashoffset: 0; } }
+
+    .marca-pie { margin-top: 18px; color: #66738b; font-size: .78rem; }
+
+    /* ---------- Panel derecho (formulario) ---------- */
+    .panel-form {
+      display: flex; align-items: center; justify-content: center; padding: 40px 24px;
       background:
-        radial-gradient(900px 500px at 15% 0%, rgba(103, 212, 193, .10), transparent 60%),
-        radial-gradient(700px 500px at 100% 100%, rgba(103, 212, 193, .06), transparent 60%),
+        radial-gradient(600px 420px at 100% 0%, rgba(103, 212, 193, .07), transparent 60%),
         #0f1420;
-      background-attachment: fixed;
-      background-repeat: no-repeat;
     }
-    .login-caja {
-      width: 100%; max-width: 400px; padding: 36px 32px 28px;
-      border-radius: 18px; background: rgba(23, 29, 43, .92);
-      border: 1px solid rgba(255, 255, 255, .08);
-      box-shadow: 0 24px 60px rgba(0, 0, 0, .45);
-    }
-    .login-marca { display: flex; align-items: center; gap: 14px; margin-bottom: 26px; }
-    .login-marca img { width: 48px; height: 48px; border-radius: 12px; }
-    .login-marca span { font-weight: 600; font-size: .9rem; color: #9aa6bd; line-height: 1.35; }
-    .login-caja h1 { font-size: 1.6rem; margin: 0 0 6px; font-weight: 800; }
-    .login-sub { color: #8b97ad; font-size: .92rem; margin: 0 0 24px; }
-    .campo { margin-bottom: 16px; }
-    .campo label { display: block; font-size: .8rem; font-weight: 600; color: #aab4c8; margin-bottom: 6px; }
+    .form-envoltorio { width: 100%; max-width: 380px; }
+
+    .marca-movil { display: none; align-items: center; gap: 12px; margin-bottom: 30px; font-weight: 700; }
+    .marca-movil small { display: block; font-weight: 500; font-size: .76rem; color: #8b97ad; }
+
+    .form-envoltorio h1 { margin: 0 0 8px; font-size: 1.75rem; font-weight: 700; letter-spacing: -.02em; }
+    .sub { margin: 0 0 30px; color: #8b97ad; font-size: .94rem; line-height: 1.55; }
+
+    .campo { margin-bottom: 18px; }
+    .campo label { display: block; margin-bottom: 7px; font-size: .8rem; font-weight: 600; color: #b4bfd1; }
     .campo input {
-      width: 100%; box-sizing: border-box; padding: 13px 14px; border-radius: 10px;
-      border: 1px solid rgba(255, 255, 255, .12); background: #0f1420; color: #f1f5f9;
-      font: inherit; font-size: 1rem; transition: border-color .15s, box-shadow .15s;
+      width: 100%; height: 48px; padding: 0 14px; border-radius: 10px;
+      border: 1px solid rgba(255, 255, 255, .12); background: #0b1018; color: #f1f5f9;
+      font: inherit; font-size: .98rem; transition: border-color .15s, box-shadow .15s;
     }
-    .campo input:focus { outline: none; border-color: #67d4c1; box-shadow: 0 0 0 3px rgba(103, 212, 193, .18); }
+    .campo input::placeholder { color: #55627a; }
+    .campo input:hover { border-color: rgba(255, 255, 255, .2); }
+    .campo input:focus { outline: none; border-color: #67d4c1; box-shadow: 0 0 0 3px rgba(103, 212, 193, .16); }
+    .campo input:disabled { opacity: .6; }
+
     .campo-pass { position: relative; }
-    .campo-pass input { padding-right: 48px; }
+    .campo-pass input { padding-right: 50px; }
     .ver-pass {
       position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
-      width: 38px; height: 38px; margin: 0; padding: 0; display: flex; align-items: center; justify-content: center;
-      background: transparent; border: none; border-radius: 8px; color: #8b97ad; cursor: pointer; box-shadow: none;
+      width: 38px; height: 38px; margin: 0; padding: 0;
+      display: flex; align-items: center; justify-content: center;
+      background: transparent; border: none; border-radius: 8px; box-shadow: none;
+      color: #7d8aa3; cursor: pointer;
     }
-    .ver-pass:hover { color: #67d4c1; background: transparent; }
-    #btn-login { width: 100%; padding: 13px; font-size: 1rem; font-weight: 700; margin-top: 4px; }
+    .ver-pass:hover { color: #67d4c1; background: rgba(103, 212, 193, .08); transform: translateY(-50%); box-shadow: none; }
+    .ver-pass .ojo-cerrado { display: none; }
+    .ver-pass.activo .ojo-abierto { display: none; }
+    .ver-pass.activo .ojo-cerrado { display: block; }
+
+    .aviso-mayus { display: none; margin-top: 7px; font-size: .78rem; color: #fbbf24; }
+    .aviso-mayus.visible { display: block; }
+
+    #btn-login {
+      width: 100%; height: 48px; margin-top: 6px; border: none; border-radius: 10px;
+      background: #67d4c1; color: #06231e; font: inherit; font-size: .98rem; font-weight: 700;
+      cursor: pointer; box-shadow: 0 6px 20px rgba(103, 212, 193, .18);
+      transition: background .15s, transform .1s, box-shadow .15s;
+    }
+    #btn-login:hover { background: #7fe0cf; transform: none; box-shadow: 0 8px 26px rgba(103, 212, 193, .26); }
+    #btn-login:active { transform: translateY(1px); }
     #btn-login:disabled { opacity: .75; cursor: wait; }
     .spinner {
-      display: inline-block; width: 14px; height: 14px; margin-right: 8px; vertical-align: -2px;
-      border: 2px solid rgba(0, 0, 0, .25); border-top-color: #0f1420; border-radius: 50%;
+      display: inline-block; width: 15px; height: 15px; margin-right: 9px; vertical-align: -2px;
+      border: 2px solid rgba(6, 35, 30, .25); border-top-color: #06231e; border-radius: 50%;
       animation: giro .7s linear infinite;
     }
     @keyframes giro { to { transform: rotate(360deg); } }
+
     .login-error {
-      display: none; margin-top: 16px; padding: 10px 12px; border-radius: 10px; font-size: .88rem;
+      display: none; margin-top: 18px; padding: 11px 13px; border-radius: 10px; font-size: .87rem; line-height: 1.45;
       background: rgba(248, 113, 113, .10); border: 1px solid rgba(248, 113, 113, .35); color: #fca5a5;
     }
-    .login-error.visible { display: block; }
-    .login-pie { margin-top: 22px; text-align: center; color: #6b7890; font-size: .78rem; }
+    .login-error.visible { display: block; animation: sacudir .35s; }
+    @keyframes sacudir { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+
+    .seguro {
+      display: flex; align-items: center; gap: 8px; margin-top: 30px; padding-top: 20px;
+      border-top: 1px solid rgba(255, 255, 255, .07); color: #66738b; font-size: .78rem; line-height: 1.45;
+    }
+    .seguro svg { flex: 0 0 auto; color: #67d4c1; }
+
+    @media (max-width: 900px) {
+      .pantalla { grid-template-columns: 1fr; }
+      .panel-marca { display: none; }
+      .marca-movil { display: flex; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation: none !important; transition: none !important; }
+    }
   </style>
 </head>
 <body>
-  <main class="login-caja">
-    <div class="login-marca">
-      <img src="assets/img/logo.png" alt="ConsigueVentas">
-      <span>Monitor de sitios web<br>ConsigueVentas</span>
-    </div>
+  <div class="pantalla">
 
-    <h1>Bienvenido</h1>
-    <p class="login-sub">Ingresa con tu cuenta autorizada para ver el estado de los sitios.</p>
+    <aside class="panel-marca">
+      <div class="orbe orbe-1"></div>
+      <div class="orbe orbe-2"></div>
 
-    <form id="form-login" novalidate>
-      <div class="campo">
-        <label for="email">Correo</label>
-        <input type="email" id="email" placeholder="tu@correo.com" autocomplete="username" autofocus>
+      <div class="marca-top">
+        <img src="assets/img/logo.png" alt="ConsigueVentas">
+        <div class="marca-nombre">ConsigueVentas<small>Monitor de sitios web</small></div>
       </div>
-      <div class="campo">
-        <label for="password">Contraseña</label>
-        <div class="campo-pass">
-          <input type="password" id="password" placeholder="Tu contraseña" autocomplete="current-password">
-          <button type="button" class="ver-pass" id="ver-pass" aria-label="Mostrar contraseña">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"></path>
-              <circle cx="12" cy="12" r="3"></circle>
-            </svg>
-          </button>
+
+      <div class="marca-centro">
+        <h2>Disponibilidad y seguridad de los sitios, <span>bajo control.</span></h2>
+        <p>Panel interno para supervisar el estado de los sitios web de los clientes de la agencia.</p>
+        <ul class="caracteristicas">
+          <li>
+            <span class="icono-car"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+            Monitoreo continuo de disponibilidad y tiempos de respuesta
+          </li>
+          <li>
+            <span class="icono-car"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+            Control del vencimiento de certificados SSL
+          </li>
+          <li>
+            <span class="icono-car"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>
+            Alertas automáticas por Telegram
+          </li>
+        </ul>
+      </div>
+
+      <div class="marca-pulso">
+        <svg viewBox="0 0 600 80" preserveAspectRatio="none" aria-hidden="true">
+          <path class="pulso-base" pathLength="100" d="M0 40 H120 L140 40 L155 10 L175 70 L195 25 L210 40 H340 L360 40 L375 15 L395 65 L412 30 L425 40 H600"/>
+          <path class="pulso-vivo" pathLength="100" d="M0 40 H120 L140 40 L155 10 L175 70 L195 25 L210 40 H340 L360 40 L375 15 L395 65 L412 30 L425 40 H600"/>
+        </svg>
+      </div>
+
+      <div class="marca-pie">© 2026 ConsigueVentas · Uso interno</div>
+    </aside>
+
+    <main class="panel-form">
+      <div class="form-envoltorio">
+
+        <div class="marca-movil">
+          <img src="assets/img/logo.png" alt="ConsigueVentas">
+          <div>ConsigueVentas<small>Monitor de sitios web</small></div>
         </div>
-      </div>
-      <button type="submit" id="btn-login">Ingresar</button>
-      <div class="login-error" id="login-error" role="alert"></div>
-    </form>
 
-    <div class="login-pie">Acceso restringido · ¿Sin acceso? Contacta al administrador</div>
-  </main>
+        <h1>Iniciar sesión</h1>
+        <p class="sub">Acceso exclusivo para personal autorizado de ConsigueVentas.</p>
+
+        <form id="form-login" novalidate>
+          <div class="campo">
+            <label for="email">Correo electrónico</label>
+            <input type="email" id="email" placeholder="nombre@empresa.com" autocomplete="username" autofocus>
+          </div>
+
+          <div class="campo">
+            <label for="password">Contraseña</label>
+            <div class="campo-pass">
+              <input type="password" id="password" placeholder="Ingresa tu contraseña" autocomplete="current-password">
+              <button type="button" class="ver-pass" id="ver-pass" aria-label="Mostrar contraseña">
+                <svg class="ojo-abierto" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/></svg>
+                <svg class="ojo-cerrado" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 19c-7 0-11-7-11-7a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>
+              </button>
+            </div>
+            <div class="aviso-mayus" id="aviso-mayus">Bloq Mayús está activado</div>
+          </div>
+
+          <button type="submit" id="btn-login">Ingresar</button>
+          <div class="login-error" id="login-error" role="alert" aria-live="polite"></div>
+        </form>
+
+        <div class="seguro">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+          <span>Conexión segura. Las cuentas son asignadas por el administrador del sistema.</span>
+        </div>
+
+      </div>
+    </main>
+  </div>
 
   <script src="assets/js/auth.js"></script>
   <script>
     if (leerSesion()) window.location.href = "dashboard.html";
 
+    const inputEmail = document.getElementById("email");
     const inputPass = document.getElementById("password");
-    document.getElementById("ver-pass").addEventListener("click", () => {
-      const oculto = inputPass.type === "password";
-      inputPass.type = oculto ? "text" : "password";
-    });
-
+    const btnVer = document.getElementById("ver-pass");
     const btn = document.getElementById("btn-login");
     const cajaError = document.getElementById("login-error");
+    const avisoMayus = document.getElementById("aviso-mayus");
+
+    btnVer.addEventListener("click", () => {
+      const oculto = inputPass.type === "password";
+      inputPass.type = oculto ? "text" : "password";
+      btnVer.classList.toggle("activo", oculto);
+      btnVer.setAttribute("aria-label", oculto ? "Ocultar contraseña" : "Mostrar contraseña");
+    });
+
+    function revisarMayus(e) {
+      if (e.getModifierState) avisoMayus.classList.toggle("visible", e.getModifierState("CapsLock"));
+    }
+    inputPass.addEventListener("keydown", revisarMayus);
+    inputPass.addEventListener("keyup", revisarMayus);
+    inputPass.addEventListener("blur", () => avisoMayus.classList.remove("visible"));
 
     function mostrarError(texto) {
+      cajaError.classList.remove("visible");
+      void cajaError.offsetWidth;
       cajaError.textContent = texto;
       cajaError.classList.add("visible");
     }
@@ -125,7 +289,7 @@
       e.preventDefault();
       cajaError.classList.remove("visible");
 
-      const email = document.getElementById("email").value.trim();
+      const email = inputEmail.value.trim();
       const password = inputPass.value;
       if (!email || !password) {
         mostrarError("Escribe tu correo y tu contraseña.");
@@ -133,6 +297,8 @@
       }
 
       btn.disabled = true;
+      inputEmail.disabled = true;
+      inputPass.disabled = true;
       btn.innerHTML = '<span class="spinner"></span>Verificando...';
       try {
         await iniciarSesion(email, password);
@@ -140,7 +306,10 @@
       } catch (err) {
         mostrarError(err.message);
         btn.disabled = false;
+        inputEmail.disabled = false;
+        inputPass.disabled = false;
         btn.textContent = "Ingresar";
+        inputPass.focus();
       }
     });
   </script>
