@@ -8,7 +8,7 @@ from app.models.chequeo import Chequeo
 from app.schemas.chequeo_schema import ChequeoRespuesta
 from app.services.monitor import verificar_disponibilidad
 from app.services.ssl_checker import verificar_ssl
-from app.services.alertas import evaluar_y_alertar
+from app.services.alertas import evaluar_y_alertar, enviar_resumen
 
 router = APIRouter(prefix="/chequeos", tags=["Chequeos"])
 
@@ -67,6 +67,7 @@ def ejecutar_todos_los_chequeos(db: Session = Depends(get_db)):
     sitios_activos = db.query(Sitio).filter(Sitio.activo == True).all()
 
     resultados = []
+    resumen = []
     for sitio in sitios_activos:
         resultado_disp = verificar_disponibilidad(sitio.url)
         resultado_ssl = verificar_ssl(sitio.url)
@@ -81,14 +82,21 @@ def ejecutar_todos_los_chequeos(db: Session = Depends(get_db)):
         db.commit()
         db.refresh(nuevo_chequeo)
 
-        if hubo_cambio_de_estado(db, sitio.id, resultado_completo["disponible"]):
-            evaluar_y_alertar(sitio.nombre_cliente, sitio.url, resultado_completo)
+        resumen.append({
+            "nombre": sitio.nombre_cliente,
+            "disponible": resultado_completo["disponible"],
+            "codigo": resultado_completo.get("codigo_http"),
+            "ssl_dias": resultado_completo.get("ssl_dias_restantes"),
+            "cambio": hubo_cambio_de_estado(db, sitio.id, resultado_completo["disponible"]),
+        })
 
         resultados.append({
             "sitio_id": sitio.id,
             "nombre_cliente": sitio.nombre_cliente,
             "disponible": resultado_completo["disponible"],
         })
+
+    enviar_resumen(resumen)
 
     return {
         "total_chequeados": len(resultados),

@@ -10,6 +10,7 @@ def _hora_actual() -> str:
 
 
 def evaluar_y_alertar(sitio_nombre: str, sitio_url: str, resultado: dict) -> list[str]:
+    
     alertas_enviadas = []
     hora = _hora_actual()
 
@@ -71,3 +72,32 @@ def evaluar_y_alertar(sitio_nombre: str, sitio_url: str, resultado: dict) -> lis
             alertas_enviadas.append("ssl_por_vencer")
 
     return alertas_enviadas
+
+def enviar_resumen(resultados: list[dict]) -> bool:
+    caidos_ahora = [r for r in resultados if not r["disponible"]]
+    nuevos_caidos = [r for r in caidos_ahora if r["cambio"]]
+    recuperados = [r for r in resultados if r["disponible"] and r["cambio"]]
+    ssl_por_vencer = [r for r in resultados if r["ssl_dias"] is not None and r["ssl_dias"] <= 15]
+
+    if not (nuevos_caidos or recuperados or ssl_por_vencer):
+        return False
+
+    icono = "🔴" if caidos_ahora else "🟢"
+    if caidos_ahora:
+        estado = f"{len(caidos_ahora)} de {len(resultados)} sitios caídos"
+    else:
+        estado = f"Los {len(resultados)} sitios están disponibles"
+
+    lineas = [f"{icono} <b>Monitor ConsigueVentas</b> · {_hora_actual()}", estado]
+
+    if nuevos_caidos:
+        lineas.append("\n🔻 <b>Cayeron:</b>")
+        lineas += [f"• {r['nombre']} ({r['codigo'] or 'sin respuesta'})" for r in nuevos_caidos]
+    if recuperados:
+        lineas.append("\n✅ <b>Recuperados:</b>")
+        lineas += [f"• {r['nombre']}" for r in recuperados]
+    if ssl_por_vencer:
+        lineas.append("\n🔒 <b>SSL por vencer:</b>")
+        lineas += [f"• {r['nombre']} ({r['ssl_dias']} días)" for r in ssl_por_vencer]
+
+    return enviar_alerta("\n".join(lineas))
