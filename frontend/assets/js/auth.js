@@ -1,4 +1,4 @@
-const SUPABASE_URL = "https://pcujdllopllqapokcmdm.supabase.co/rest/v1/";
+const SUPABASE_URL = "https://pcujdllopllqapokcmdm.supabase.co";
 const SUPABASE_KEY = "sb_publishable_corrQIYSrmnDc9kartXztQ_XaQ9OuUn";
 const CLAVE_SESION = "mcv_sesion";
 
