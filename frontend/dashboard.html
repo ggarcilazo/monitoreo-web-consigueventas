@@ -21,7 +21,10 @@
           <p>Agencia de marketing digital · Estado en tiempo real</p>
         </div>
       </div>
-      <button id="btn-chequear-todos">Chequear todos</button>
+      <div style="display:flex; gap:10px; align-items:center;">
+        <button id="btn-chequear-todos">Chequear todos</button>
+        <button id="btn-salir" class="secondary">Salir</button>
+      </div>    
     </header>
 
     <div class="resumen">
@@ -42,6 +45,7 @@
     <div class="sitios" id="sitios"></div>
   </div>
 
-  <script src="assets/js/dashboard.js"></script>
-</body>
+  <script src="assets/js/auth.js"></script>
+  <script>if (!leerSesion()) window.location.href = "login.html";</script>
+  <script src="assets/js/dashboard.js"></script></body>
 </html>

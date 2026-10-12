@@ -155,3 +155,5 @@ btnChequearTodos.addEventListener("click", async () => {
 });
 
 cargarSitios();
+
+document.getElementById("btn-salir").addEventListener("click", cerrarSesion);
