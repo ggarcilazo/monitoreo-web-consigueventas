@@ -46,7 +46,7 @@ def ssl_cambio_de_dias(db: Session, sitio_id: int, dias_ahora) -> bool:
     return anterior.ssl_dias_restantes != dias_ahora
 
 
-@router.post("/ejecutar/{sitio_id}", response_model=ChequeoRespuesta, status_code=status.HTTP_201_CREATE, dependencies=[Depends(requerir_usuario)])
+@router.post("/ejecutar/{sitio_id}", response_model=ChequeoRespuesta, status_code=status.HTTP_201_CREATED, dependencies=[Depends(requerir_usuario)])
 def ejecutar_chequeo(sitio_id: int, db: Session = Depends(get_db)):
     sitio = db.query(Sitio).filter(Sitio.id == sitio_id).first()
     if not sitio:
@@ -76,7 +76,7 @@ def ejecutar_chequeo(sitio_id: int, db: Session = Depends(get_db)):
     return nuevo_chequeo
 
 
-@router.post("/ejecutar-todos",  dependencies=[Depends(requerir_usuario_o_cron)])
+@router.post("/ejecutar-todos", dependencies=[Depends(requerir_usuario_o_cron)])
 def ejecutar_todos_los_chequeos(db: Session = Depends(get_db)):
     sitios_activos = db.query(Sitio).filter(Sitio.activo == True).all()
 
