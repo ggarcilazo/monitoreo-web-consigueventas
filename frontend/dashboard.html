@@ -3,8 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Monitor ConsigueVentas</title>
-  
+  <meta name="robots" content="noindex, nofollow">
+  <title>Panel · Monitor ConsigueVentas</title>
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,60 +13,122 @@
   <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="marca">
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="side-marca">
         <img src="assets/img/logo.png" alt="ConsigueVentas" class="logo">
-        <div>
-          <h1>Monitor de sitios web</h1>
-          <p>Agencia de marketing digital · Estado en tiempo real</p>
-        </div>
+        <div class="side-nombre">ConsigueVentas<small>Monitor de sitios web</small></div>
       </div>
-      <div class="acciones-header">
+
+      <nav class="side-nav" id="side-nav">
+        <a href="#panel" data-vista="panel" class="activo">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+          Panel
+        </a>
+        <a href="#sitios" data-vista="sitios">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Sitios
+        </a>
+        <a href="#incidentes" data-vista="incidentes">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+          Incidentes
+        </a>
+        <a href="#usuarios" data-vista="usuarios">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          Usuarios
+        </a>
+      </nav>
+
+      <div class="side-pie">
         <span class="usuario" id="usuario-email"></span>
-        <button id="btn-chequear-todos">Chequear todos</button>
         <button id="btn-salir" class="secondary">Salir</button>
-      </div>   
-    </header>
+      </div>
+    </aside>
 
-    <div class="resumen">
-      <div class="stat" data-estado="todos" title="Ver todos">
-        <div class="valor" id="stat-total">—</div>
-        <div class="etiqueta">Sitios registrados</div>
-      </div>
-      <div class="stat stat-ok" data-estado="ok" title="Ver solo disponibles">
-        <div class="valor" id="stat-ok">—</div>
-        <div class="etiqueta">Disponibles</div>
-      </div>
-      <div class="stat stat-error" data-estado="error" title="Ver solo caídos">
-        <div class="valor" id="stat-caidos">—</div>
-        <div class="etiqueta">Caídos</div>
-      </div>
-    </div>
+    <main class="contenido">
+      <div class="container">
 
-    <div class="barra">
-      <div class="buscador">
-        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="search" id="buscador" placeholder="Buscar por nombre o URL..." autocomplete="off">
-      </div>
-      <div class="filtros">
-        <button type="button" class="chip activo" data-estado="todos">Todos</button>
-        <button type="button" class="chip" data-estado="ok">Disponibles</button>
-        <button type="button" class="chip" data-estado="error">Caídos</button>
-      </div>
-      <select id="orden" aria-label="Ordenar sitios">
-        <option value="nombre">Ordenar: Nombre</option>
-        <option value="estado">Ordenar: Caídos primero</option>
-        <option value="lento">Ordenar: Más lentos primero</option>
-        <option value="ssl">Ordenar: SSL por vencer</option>
-      </select>
-      <span class="ultimo-chequeo" id="ultimo-chequeo"></span>
-    </div>
+        <div class="topbar">
+          <div>
+            <h1 id="titulo-vista">Panel</h1>
+            <p id="subtitulo-vista">Estado en tiempo real de los sitios monitoreados</p>
+          </div>
+          <button id="btn-chequear-todos">Chequear todos</button>
+        </div>
 
-    <div class="sitios" id="sitios"></div>
+        <!-- ===== Vista: Panel ===== -->
+        <section class="vista" id="vista-panel">
+          <div class="resumen">
+            <div class="stat" data-estado="todos" title="Ver todos">
+              <div class="valor" id="stat-total">—</div>
+              <div class="etiqueta">Sitios registrados</div>
+            </div>
+            <div class="stat stat-ok" data-estado="ok" title="Ver solo disponibles">
+              <div class="valor" id="stat-ok">—</div>
+              <div class="etiqueta">Disponibles</div>
+            </div>
+            <div class="stat stat-error" data-estado="error" title="Ver solo caídos">
+              <div class="valor" id="stat-caidos">—</div>
+              <div class="etiqueta">Caídos</div>
+            </div>
+          </div>
+
+          <div class="barra">
+            <div class="buscador">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="search" id="buscador" placeholder="Buscar por nombre o URL..." autocomplete="off">
+            </div>
+            <div class="filtros">
+              <button type="button" class="chip activo" data-estado="todos">Todos</button>
+              <button type="button" class="chip" data-estado="ok">Disponibles</button>
+              <button type="button" class="chip" data-estado="error">Caídos</button>
+            </div>
+            <select id="orden" aria-label="Ordenar sitios">
+              <option value="nombre">Ordenar: Nombre</option>
+              <option value="estado">Ordenar: Caídos primero</option>
+              <option value="lento">Ordenar: Más lentos primero</option>
+              <option value="ssl">Ordenar: SSL por vencer</option>
+            </select>
+            <span class="ultimo-chequeo" id="ultimo-chequeo"></span>
+          </div>
+
+          <div class="sitios" id="sitios"></div>
+        </section>
+
+        <!-- ===== Vista: Sitios ===== -->
+        <section class="vista" id="vista-sitios" hidden>
+          <div class="proximamente">
+            <h2>Gestión de sitios</h2>
+            <p>Aquí podrás agregar, pausar, ocultar y eliminar sitios sin usar la terminal.</p>
+            <span class="etiqueta-prox">Próximamente</span>
+          </div>
+        </section>
+
+        <!-- ===== Vista: Incidentes ===== -->
+        <section class="vista" id="vista-incidentes" hidden>
+          <div class="proximamente">
+            <h2>Registro de incidentes</h2>
+            <p>Aquí verás cuándo cayó cada sitio, cuánto duró la caída y cuándo se recuperó.</p>
+            <span class="etiqueta-prox">Próximamente</span>
+          </div>
+        </section>
+
+        <!-- ===== Vista: Usuarios ===== -->
+        <section class="vista" id="vista-usuarios" hidden>
+          <div class="proximamente">
+            <h2>Usuarios y roles</h2>
+            <p>Aquí definirás quién puede solo ver el panel y quién puede administrarlo.</p>
+            <span class="etiqueta-prox">Próximamente</span>
+          </div>
+        </section>
+
+      </div>
+    </main>
   </div>
 
   <script src="assets/js/auth.js"></script>
   <script>if (!leerSesion()) window.location.href = "login.html";</script>
-  <script src="assets/js/dashboard.js"></script></body>
+  <script src="assets/js/dashboard.js"></script>
+</body>
 </html>

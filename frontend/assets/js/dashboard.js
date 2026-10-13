@@ -387,3 +387,23 @@ document.getElementById("orden").addEventListener("change", (e) => {
 });
 document.querySelectorAll(".chip").forEach(c => c.addEventListener("click", () => setFiltro(c.dataset.estado)));
 document.querySelectorAll(".stat[data-estado]").forEach(s => s.addEventListener("click", () => setFiltro(s.dataset.estado)));
+
+const vistas = {
+  panel: { titulo: "Panel", subtitulo: "Estado en tiempo real de los sitios monitoreados" },
+  sitios: { titulo: "Sitios", subtitulo: "Administra los sitios que se monitorean" },
+  incidentes: { titulo: "Incidentes", subtitulo: "Caídas detectadas y su duración" },
+  usuarios: { titulo: "Usuarios", subtitulo: "Quién tiene acceso a este panel" },
+};
+
+function irA(vista) {
+  if (!vistas[vista]) vista = "panel";
+  document.querySelectorAll(".vista").forEach(s => { s.hidden = s.id !== `vista-${vista}`; });
+  document.querySelectorAll("#side-nav a").forEach(a => a.classList.toggle("activo", a.dataset.vista === vista));
+  document.getElementById("titulo-vista").textContent = vistas[vista].titulo;
+  document.getElementById("subtitulo-vista").textContent = vistas[vista].subtitulo;
+  document.getElementById("btn-chequear-todos").hidden = vista !== "panel";
+  document.title = `${vistas[vista].titulo} · Monitor ConsigueVentas`;
+}
+
+window.addEventListener("hashchange", () => irA(location.hash.slice(1)));
+irA(location.hash.slice(1));

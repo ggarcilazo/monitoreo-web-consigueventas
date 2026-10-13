@@ -514,3 +514,107 @@ button.chip.activo { background: var(--ok-bg); color: var(--accent); }
 @media (max-width: 900px) {
   .panel-metricas { grid-template-columns: 1fr; }
 }
+
+/* ---------- Estructura con menú lateral ---------- */
+.app {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+  padding: 1.5rem 1rem;
+  border-right: 1px solid var(--border);
+  background: rgba(15, 20, 32, 0.72);
+  backdrop-filter: blur(8px);
+}
+
+.side-marca { display: flex; align-items: center; gap: 0.8rem; padding: 0 0.4rem; }
+.side-nombre { font-weight: 700; font-size: 0.95rem; letter-spacing: 0.01em; line-height: 1.25; }
+.side-nombre small { display: block; margin-top: 2px; font-weight: 500; font-size: 0.74rem; color: var(--text-dim); }
+
+.side-nav { display: flex; flex-direction: column; gap: 0.25rem; }
+.side-nav a {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.8rem;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  color: var(--text-dim);
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+.side-nav a svg { flex: 0 0 auto; }
+.side-nav a:hover { background: rgba(255, 255, 255, 0.05); color: var(--text); }
+.side-nav a.activo { background: var(--ok-bg); color: var(--accent); border-color: rgba(103, 212, 193, 0.22); }
+
+.side-pie { margin-top: auto; display: flex; flex-direction: column; gap: 0.6rem; }
+.side-pie .usuario { max-width: none; text-align: center; }
+.side-pie button { width: 100%; }
+
+.contenido { min-width: 0; }
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding-bottom: 1.25rem;
+  margin-bottom: 1.75rem;
+  border-bottom: 1px solid var(--border);
+}
+.topbar h1 { font-size: clamp(1.25rem, 1.05rem + 0.9vw, 1.75rem); font-weight: 700; letter-spacing: -0.02em; }
+.topbar p { margin-top: 0.15rem; color: var(--text-dim); font-size: 0.85rem; }
+
+.proximamente {
+  padding: 4rem 1.5rem;
+  text-align: center;
+  border: 1px dashed var(--border-fuerte);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.02);
+}
+.proximamente h2 { margin-bottom: 0.5rem; font-size: 1.15rem; }
+.proximamente p { max-width: 46ch; margin: 0 auto 1.1rem; color: var(--text-dim); font-size: 0.9rem; line-height: 1.55; }
+.etiqueta-prox {
+  display: inline-block;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background: var(--ok-bg);
+  color: var(--accent);
+  font-size: 0.74rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 900px) {
+  .app { grid-template-columns: minmax(0, 1fr); }
+  .sidebar {
+    position: static;
+    height: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.75rem 1rem;
+    padding: 1rem;
+    border-right: none;
+    border-bottom: 1px solid var(--border);
+  }
+  .side-nav { order: 3; flex-direction: row; width: 100%; overflow-x: auto; }
+  .side-nav a { white-space: nowrap; }
+  .side-pie { margin: 0 0 0 auto; flex-direction: row; align-items: center; }
+  .side-pie .usuario { display: none; }
+  .side-pie button { width: auto; }
+}
