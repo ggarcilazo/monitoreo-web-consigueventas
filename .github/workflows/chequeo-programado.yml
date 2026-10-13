@@ -10,8 +10,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Llamar al endpoint de chequeo masivo
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           curl -X POST https://consigueventas.duckdns.org/api/chequeos/ejecutar-todos \
+            -H "X-Cron-Key: $CRON_SECRET" \
             --fail \
             --silent \
             --show-error

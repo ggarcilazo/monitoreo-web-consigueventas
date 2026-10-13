@@ -11,7 +11,7 @@ let sitiosCache = [];
 async function cargarSitios() {
   contenedorSitios.innerHTML = `<div class="estado-carga">Cargando sitios...</div>`;
   try {
-    const resp = await fetch(`${API_BASE}/sitios/`);
+    const resp = await apiFetch(`${API_BASE}/sitios/`);
     sitiosCache = await resp.json();
     sitiosCache = sitiosCache.filter(s => !s.oculto);
 
@@ -33,7 +33,7 @@ async function cargarSitios() {
 }
 
 async function obtenerUltimoChequeo(sitioId) {
-  const resp = await fetch(`${API_BASE}/chequeos/sitio/${sitioId}`);
+  const resp = await apiFetch(`${API_BASE}/chequeos/sitio/${sitioId}`);
   const chequeos = await resp.json();
   return chequeos[0] || null;
 }
@@ -102,7 +102,7 @@ function renderSitios(sitios, ultimosChequeos) {
       const id = btn.dataset.id;
       btn.disabled = true;
       btn.textContent = "Chequeando...";
-      await fetch(`${API_BASE}/chequeos/ejecutar/${id}`, { method: "POST" });
+      await apiFetch(`${API_BASE}/chequeos/ejecutar/${id}`, { method: "POST" });
       await cargarSitios();
     });
   });
@@ -118,7 +118,7 @@ async function toggleHistorial(sitioId) {
   }
 
   div.classList.add("abierto");
-  const resp = await fetch(`${API_BASE}/chequeos/sitio/${sitioId}`);
+  const resp = await apiFetch(`${API_BASE}/chequeos/sitio/${sitioId}`);
   const chequeos = await resp.json();
 
   if (chequeos.length === 0) {
@@ -148,7 +148,7 @@ async function toggleHistorial(sitioId) {
 btnChequearTodos.addEventListener("click", async () => {
   btnChequearTodos.disabled = true;
   btnChequearTodos.textContent = "Chequeando todos...";
-  await fetch(`${API_BASE}/chequeos/ejecutar-todos`, { method: "POST" });
+  await apiFetch(`${API_BASE}/chequeos/ejecutar-todos`, { method: "POST" });
   await cargarSitios();
   btnChequearTodos.disabled = false;
   btnChequearTodos.textContent = "Chequear todos";
