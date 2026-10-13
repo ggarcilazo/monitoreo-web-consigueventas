@@ -10,6 +10,8 @@ from app.services.monitor import verificar_disponibilidad
 from app.services.ssl_checker import verificar_ssl
 from app.services.alertas import evaluar_y_alertar, enviar_resumen
 from app.auth import requerir_usuario, requerir_usuario_o_cron
+from collections import defaultdict
+from datetime import datetime, timedelta, timezone
 
 router = APIRouter(prefix="/chequeos", tags=["Chequeos"])
 
@@ -127,3 +129,67 @@ def historial_chequeos(sitio_id: int, db: Session = Depends(get_db)):
         .order_by(Chequeo.ejecutado_en.desc())
         .all()
     )
+
+
+
+ZONA_PERU = timezone(timedelta(hours=-5))
+
+
+@router.get("/uptime", dependencies=[Depends(requerir_usuario)])
+def resumen_uptime(db: Session = Depends(get_db)):
+    """
+    Uptime de los últimos 7 y 30 días por sitio, más el estado de cada
+    uno de los últimos 30 días (hora de Lima) para la barra de disponibilidad.
+    """
+    hoy = datetime.now(ZONA_PERU).date()
+    inicio = datetime.combine(hoy - timedelta(days=29), datetime.min.time(), tzinfo=ZONA_PERU)
+    limite_7 = hoy - timedelta(days=6)
+    lista_dias = [hoy - timedelta(days=i) for i in range(29, -1, -1)]
+
+    filas = (
+        db.query(Chequeo.sitio_id, Chequeo.disponible, Chequeo.ejecutado_en)
+        .filter(Chequeo.ejecutado_en >= inicio)
+        .all()
+    )
+
+    # sitio_id -> fecha -> [total, disponibles]
+    acumulado = defaultdict(lambda: defaultdict(lambda: [0, 0]))
+    for sitio_id, disponible, ejecutado_en in filas:
+        if ejecutado_en.tzinfo is None:
+            ejecutado_en = ejecutado_en.replace(tzinfo=timezone.utc)
+        fecha = ejecutado_en.astimezone(ZONA_PERU).date()
+        celda = acumulado[sitio_id][fecha]
+        celda[0] += 1
+        if disponible:
+            celda[1] += 1
+
+    resultado = []
+    for sitio_id, por_dia in acumulado.items():
+        total_30 = sum(v[0] for v in por_dia.values())
+        ok_30 = sum(v[1] for v in por_dia.values())
+        total_7 = sum(v[0] for f, v in por_dia.items() if f >= limite_7)
+        ok_7 = sum(v[1] for f, v in por_dia.items() if f >= limite_7)
+
+        dias = []
+        for f in lista_dias:
+            total, ok = por_dia.get(f, (0, 0))
+            if total == 0:
+                estado = "sin_datos"
+            elif ok == total:
+                estado = "ok"
+            elif ok == 0:
+                estado = "caido"
+            else:
+                estado = "parcial"
+            dias.append({"fecha": f.isoformat(), "estado": estado, "chequeos": total, "ok": ok})
+
+        resultado.append({
+            "sitio_id": sitio_id,
+            "uptime_7d": round(ok_7 * 100 / total_7, 2) if total_7 else None,
+            "uptime_30d": round(ok_30 * 100 / total_30, 2) if total_30 else None,
+            "chequeos_7d": total_7,
+            "chequeos_30d": total_30,
+            "dias": dias,
+        })
+
+    return resultado
