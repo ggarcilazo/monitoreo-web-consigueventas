@@ -157,3 +157,4 @@ btnChequearTodos.addEventListener("click", async () => {
 cargarSitios();
 
 document.getElementById("btn-salir").addEventListener("click", cerrarSesion);
+document.getElementById("usuario-email").textContent = (leerSesion() || {}).email || "";
