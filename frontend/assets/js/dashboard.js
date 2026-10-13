@@ -297,7 +297,6 @@ function renderSitios(sitios, ultimosChequeos) {
       <button class="secondary btn-chequear" data-id="${sitio.id}">Chequear ahora</button>
     </div>
   </div>
-  ${panelMetricas(sitio.id)}  
   <div class="historial" id="historial-${sitio.id}">
     <div class="estado-carga">Cargando historial...</div>
   </div>
@@ -338,6 +337,7 @@ async function toggleHistorial(sitioId) {
   div.classList.add("abierto");
   const resp = await apiFetch(`${API_BASE}/chequeos/sitio/${sitioId}`);
   const chequeos = await resp.json();
+  historialCache[sitioId] = chequeos;
 
   if (chequeos.length === 0) {
     div.innerHTML = `<div class="estado-vacio">Sin chequeos registrados.</div>`;
@@ -354,6 +354,7 @@ async function toggleHistorial(sitioId) {
   `).join("");
 
   div.innerHTML = `
+    ${panelMetricas(sitioId)}
     <table>
       <thead>
         <tr><th>Fecha</th><th>Estado</th><th>Respuesta</th><th>SSL</th></tr>

@@ -618,3 +618,24 @@ button.chip.activo { background: var(--ok-bg); color: var(--accent); }
   .side-pie .usuario { display: none; }
   .side-pie button { width: auto; }
 }
+
+/* ---------- Métricas dentro del detalle desplegable ---------- */
+.historial .panel-metricas {
+  gap: 0;
+  padding: 0 0 1.2rem;
+  margin-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+.historial .mini {
+  padding: 0.3rem 1.4rem;
+  border: none;
+  border-radius: 0;
+  background: transparent;
+}
+.historial .mini:first-child { padding-left: 0; }
+.historial .mini + .mini { border-left: 1px solid var(--border); }
+
+@media (max-width: 900px) {
+  .historial .mini { padding: 0.75rem 0; }
+  .historial .mini + .mini { border-left: none; border-top: 1px solid var(--border); }
+}
