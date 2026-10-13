@@ -2,7 +2,7 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.auth import requerir_usuario
-from app.routers import sitios, chequeos
+from app.routers import sitios, chequeos, publico
 
 app = FastAPI(
     title="Monitoreo Web ConsigueVentas",
@@ -23,6 +23,7 @@ app.add_middleware(
 
 app.include_router(sitios.router, dependencies=[Depends(requerir_usuario)])
 app.include_router(chequeos.router)
+app.include_router(publico.router)
 
 
 @app.get("/")
