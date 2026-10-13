@@ -8,15 +8,14 @@ from fastapi import Header, HTTPException
 SUPABASE_URL = os.getenv("SUPABASE_URL", "").rstrip("/")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY", "")
 CRON_SECRET = os.getenv("CRON_SECRET", "")
-USUARIOS_PERMITIDOS = {
-    e.strip().lower() for e in os.getenv("USUARIOS_PERMITIDOS", "").split(",") if e.strip()
-}
+
+ROLES_VALIDOS = {"admin", "lector"}
 
 _CACHE_SEGUNDOS = 60
-_cache: dict[str, tuple[str, float]] = {}
+_cache: dict[str, tuple[dict, float]] = {}
 
 
-def _email_del_token(token: str) -> str:
+def _usuario_del_token(token: str) -> dict:
     ahora = time.time()
     en_cache = _cache.get(token)
     if en_cache and en_cache[1] > ahora:
@@ -37,30 +36,41 @@ def _email_del_token(token: str) -> str:
     if r.status_code != 200:
         raise HTTPException(status_code=401, detail="Sesión inválida o expirada")
 
-    email = (r.json().get("email") or "").lower()
+    datos = r.json()
+    usuario = {
+        "email": (datos.get("email") or "").lower(),
+        "rol": ((datos.get("app_metadata") or {}).get("rol") or "").lower(),
+    }
     if len(_cache) > 200:
         _cache.clear()
-    _cache[token] = (email, ahora + _CACHE_SEGUNDOS)
-    return email
+    _cache[token] = (usuario, ahora + _CACHE_SEGUNDOS)
+    return usuario
 
 
-def _usuario_desde_header(authorization):
+def _usuario_desde_header(authorization) -> dict:
     if not authorization or not authorization.lower().startswith("bearer "):
         raise HTTPException(status_code=401, detail="No autenticado")
-    email = _email_del_token(authorization[7:].strip())
-    if USUARIOS_PERMITIDOS and email not in USUARIOS_PERMITIDOS:
+    usuario = _usuario_del_token(authorization[7:].strip())
+    if usuario["rol"] not in ROLES_VALIDOS:
         raise HTTPException(status_code=403, detail="Usuario sin acceso")
-    return email
+    return usuario
 
 
-def requerir_usuario(authorization: str | None = Header(default=None)) -> str:
+def requerir_usuario(authorization: str | None = Header(default=None)) -> dict:
     return _usuario_desde_header(authorization)
+
+
+def requerir_admin(authorization: str | None = Header(default=None)) -> dict:
+    usuario = _usuario_desde_header(authorization)
+    if usuario["rol"] != "admin":
+        raise HTTPException(status_code=403, detail="Se requiere rol de administrador")
+    return usuario
 
 
 def requerir_usuario_o_cron(
     authorization: str | None = Header(default=None),
     x_cron_key: str | None = Header(default=None),
-) -> str:
+) -> dict:
     if CRON_SECRET and x_cron_key and secrets.compare_digest(x_cron_key, CRON_SECRET):
-        return "cron"
+        return {"email": "cron", "rol": "cron"}
     return _usuario_desde_header(authorization)

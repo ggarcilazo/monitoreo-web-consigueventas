@@ -28,3 +28,7 @@ app.include_router(chequeos.router)
 @app.get("/")
 def raiz():
     return {"mensaje": "API de monitoreo web funcionando"}
+
+@app.get("/me")
+def perfil(usuario: dict = Depends(requerir_usuario)):
+    return usuario

@@ -408,3 +408,17 @@ function irA(vista) {
 
 window.addEventListener("hashchange", () => irA(location.hash.slice(1)));
 irA(location.hash.slice(1));
+
+let rolActual = "";
+
+async function cargarPerfil() {
+  try {
+    const resp = await apiFetch(`${API_BASE}/me`);
+    if (!resp.ok) return;
+    const yo = await resp.json();
+    rolActual = yo.rol;
+    document.body.dataset.rol = yo.rol;
+    document.getElementById("usuario-rol").textContent = yo.rol === "admin" ? "Administrador" : "Lector";
+  } catch {}
+}
+cargarPerfil();

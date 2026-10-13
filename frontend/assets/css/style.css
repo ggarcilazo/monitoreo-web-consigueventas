@@ -639,3 +639,17 @@ button.chip.activo { background: var(--ok-bg); color: var(--accent); }
   .historial .mini { padding: 0.75rem 0; }
   .historial .mini + .mini { border-left: none; border-top: 1px solid var(--border); }
 }
+
+.rol-chip {
+  align-self: center;
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  background: var(--ok-bg);
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.rol-chip:empty { display: none; }
+body[data-rol="lector"] .rol-chip { background: rgba(255, 255, 255, 0.07); color: var(--text-dim); }
