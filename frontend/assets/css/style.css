@@ -352,3 +352,46 @@ button.secondary:hover {
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* ---------- Barra de herramientas ---------- */
+.stat[data-estado] { cursor: pointer; transition: border-color 0.15s ease, transform 0.15s ease; }
+.stat[data-estado]:hover { border-color: var(--border-fuerte); transform: translateY(-1px); }
+.stat.seleccionado { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent) inset; }
+.stat-error.seleccionado { border-color: var(--error); box-shadow: 0 0 0 1px var(--error) inset; }
+
+.barra { display: flex; align-items: center; flex-wrap: wrap; gap: 0.75rem; margin-bottom: 1.1rem; }
+
+.buscador { position: relative; flex: 1 1 260px; max-width: 420px; }
+.buscador svg { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-tenue); pointer-events: none; }
+.buscador input {
+  width: 100%; height: 42px; padding: 0 14px 0 40px;
+  border-radius: 10px; border: 1px solid var(--border-fuerte);
+  background: var(--panel); color: var(--text);
+  font: inherit; font-size: 0.88rem;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.buscador input::placeholder { color: var(--text-tenue); }
+.buscador input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(103, 212, 193, 0.16); }
+
+.filtros { display: flex; gap: 0.25rem; padding: 0.25rem; border: 1px solid var(--border); border-radius: 12px; background: var(--panel); }
+button.chip {
+  background: transparent; color: var(--text-dim); border: none; box-shadow: none;
+  padding: 0.45rem 0.9rem; border-radius: 8px; font-size: 0.8rem; font-weight: 600;
+}
+button.chip:hover { background: rgba(255, 255, 255, 0.05); color: var(--text); box-shadow: none; }
+button.chip.activo { background: var(--ok-bg); color: var(--accent); }
+
+.barra select {
+  height: 42px; padding: 0 0.9rem; border-radius: 10px;
+  border: 1px solid var(--border-fuerte); background: var(--panel); color: var(--text);
+  font: inherit; font-size: 0.82rem; cursor: pointer;
+}
+.barra select:focus { outline: none; border-color: var(--accent); }
+.barra select option { background: var(--panel); color: var(--text); }
+
+.ultimo-chequeo { margin-left: auto; color: var(--text-tenue); font-size: 0.78rem; }
+
+@media (max-width: 720px) {
+  .buscador { max-width: none; flex-basis: 100%; }
+  .ultimo-chequeo { margin-left: 0; flex-basis: 100%; }
+}

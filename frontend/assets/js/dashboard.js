@@ -7,6 +7,10 @@ const statOk = document.getElementById("stat-ok");
 const statCaidos = document.getElementById("stat-caidos");
 
 let sitiosCache = [];
+let ultimosCache = [];
+let filtroEstado = "todos";
+let textoBusqueda = "";
+let ordenActual = "nombre";
 
 async function cargarSitios() {
   contenedorSitios.innerHTML = `<div class="estado-carga">Cargando sitios...</div>`;
@@ -25,8 +29,10 @@ async function cargarSitios() {
       sitiosCache.map(s => obtenerUltimoChequeo(s.id))
     );
 
-    renderSitios(sitiosCache, ultimosChequeos);
+    ultimosCache = ultimosChequeos;
+    aplicarFiltros();
     actualizarResumen(ultimosChequeos);
+    actualizarUltimoChequeo(ultimosChequeos);
   } catch (err) {
     contenedorSitios.innerHTML = `<div class="estado-vacio">No se pudo conectar con el servidor.</div>`;
   }
@@ -36,6 +42,58 @@ async function obtenerUltimoChequeo(sitioId) {
   const resp = await apiFetch(`${API_BASE}/chequeos/sitio/${sitioId}`);
   const chequeos = await resp.json();
   return chequeos[0] || null;
+}
+
+function estadoDe(c) {
+  return !c ? "sin-datos" : (c.disponible ? "ok" : "error");
+}
+
+const comparadores = {
+  nombre: (a, b) => a.sitio.nombre_cliente.localeCompare(b.sitio.nombre_cliente, "es"),
+  estado: (a, b) => {
+    const peso = { error: 0, "sin-datos": 1, ok: 2 };
+    return peso[estadoDe(a.chequeo)] - peso[estadoDe(b.chequeo)]
+      || a.sitio.nombre_cliente.localeCompare(b.sitio.nombre_cliente, "es");
+  },
+  lento: (a, b) => (b.chequeo?.tiempo_respuesta_ms ?? -1) - (a.chequeo?.tiempo_respuesta_ms ?? -1),
+  ssl: (a, b) => (a.chequeo?.ssl_dias_restantes ?? 99999) - (b.chequeo?.ssl_dias_restantes ?? 99999),
+};
+
+function aplicarFiltros() {
+  const q = textoBusqueda.trim().toLowerCase();
+  let filas = sitiosCache.map((s, i) => ({ sitio: s, chequeo: ultimosCache[i] }));
+
+  if (filtroEstado !== "todos") {
+    filas = filas.filter(f => estadoDe(f.chequeo) === filtroEstado);
+  }
+  if (q) {
+    filas = filas.filter(f =>
+      f.sitio.nombre_cliente.toLowerCase().includes(q) || f.sitio.url.toLowerCase().includes(q)
+    );
+  }
+  filas.sort(comparadores[ordenActual]);
+
+  if (filas.length === 0) {
+    contenedorSitios.innerHTML = `<div class="estado-vacio">Ningún sitio coincide con los filtros.</div>`;
+    return;
+  }
+  renderSitios(filas.map(f => f.sitio), filas.map(f => f.chequeo));
+}
+
+function setFiltro(estado) {
+  filtroEstado = estado;
+  document.querySelectorAll(".chip").forEach(c => c.classList.toggle("activo", c.dataset.estado === estado));
+  document.querySelectorAll(".stat[data-estado]").forEach(s =>
+    s.classList.toggle("seleccionado", estado !== "todos" && s.dataset.estado === estado)
+  );
+  aplicarFiltros();
+}
+
+function actualizarUltimoChequeo(chequeos) {
+  const fechas = chequeos.filter(Boolean).map(c => new Date(c.ejecutado_en).getTime());
+  document.getElementById("ultimo-chequeo").textContent = fechas.length
+    ? "Último chequeo: " + new Date(Math.max(...fechas)).toLocaleString("es-PE", { dateStyle: "short", timeStyle: "short" })
+    : "";
 }
 
 function actualizarResumen(ultimosChequeos) {
@@ -158,3 +216,14 @@ cargarSitios();
 
 document.getElementById("btn-salir").addEventListener("click", cerrarSesion);
 document.getElementById("usuario-email").textContent = (leerSesion() || {}).email || "";
+
+document.getElementById("buscador").addEventListener("input", (e) => {
+  textoBusqueda = e.target.value;
+  aplicarFiltros();
+});
+document.getElementById("orden").addEventListener("change", (e) => {
+  ordenActual = e.target.value;
+  aplicarFiltros();
+});
+document.querySelectorAll(".chip").forEach(c => c.addEventListener("click", () => setFiltro(c.dataset.estado)));
+document.querySelectorAll(".stat[data-estado]").forEach(s => s.addEventListener("click", () => setFiltro(s.dataset.estado)));
