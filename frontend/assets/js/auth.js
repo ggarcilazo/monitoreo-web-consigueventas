@@ -1,5 +1,5 @@
-const SUPABASE_URL = "https://pcujdllopllqapokcmdm.supabase.co";
-const SUPABASE_KEY = "sb_publishable_corrQIYSrmnDc9kartXztQ_XaQ9OuUn";
+const SUPABASE_URL = "https://fgdshcruqifmiwttwshn.supabase.co";
+const SUPABASE_KEY = "sb_publishable_0i6w0U9P5QGV83DoEh5ang_zOdRhyXv";
 const CLAVE_SESION = "mcv_sesion";
 
 function leerSesion() {
