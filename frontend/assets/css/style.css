@@ -395,3 +395,50 @@ button.chip.activo { background: var(--ok-bg); color: var(--accent); }
   .buscador { max-width: none; flex-basis: 100%; }
   .ultimo-chequeo { margin-left: 0; flex-basis: 100%; }
 }
+
+
+/* ---------- Uptime ---------- */
+.uptime {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0 1.4rem 1.15rem calc(1.4rem + 10px + 0.95rem);
+}
+
+.uptime-barra {
+  flex: 1;
+  min-width: 0;
+  display: grid;
+  grid-template-columns: repeat(30, minmax(0, 1fr));
+  gap: 3px;
+}
+
+.dia {
+  height: 26px;
+  border-radius: 3px;
+  background: rgba(255, 255, 255, 0.07);
+  cursor: default;
+  transition: transform 0.12s ease, filter 0.12s ease;
+}
+.dia:hover { transform: scaleY(1.18); filter: brightness(1.25); }
+.dia.ok { background: var(--ok); }
+.dia.parcial { background: #fbbf24; }
+.dia.caido { background: var(--error); }
+
+.uptime-cifras {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 1.1rem;
+  font-size: 0.78rem;
+  color: var(--text-dim);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.uptime-cifras strong { font-weight: 700; }
+.uptime-cifras strong.alto { color: var(--ok); }
+.uptime-cifras strong.medio { color: #fbbf24; }
+.uptime-cifras strong.bajo { color: var(--error); }
+
+@media (max-width: 720px) {
+  .uptime { flex-direction: column; align-items: stretch; gap: 0.6rem; padding-left: 1.4rem; }
+}

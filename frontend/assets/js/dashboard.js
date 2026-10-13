@@ -8,6 +8,7 @@ const statCaidos = document.getElementById("stat-caidos");
 
 let sitiosCache = [];
 let ultimosCache = [];
+let uptimeCache = {};
 let filtroEstado = "todos";
 let textoBusqueda = "";
 let ordenActual = "nombre";
@@ -29,6 +30,7 @@ async function cargarSitios() {
       sitiosCache.map(s => obtenerUltimoChequeo(s.id))
     );
 
+    uptimeCache = await obtenerUptime();
     ultimosCache = ultimosChequeos;
     aplicarFiltros();
     actualizarResumen(ultimosChequeos);
@@ -96,6 +98,63 @@ function actualizarUltimoChequeo(chequeos) {
     : "";
 }
 
+async function obtenerUptime() {
+  try {
+    const resp = await apiFetch(`${API_BASE}/chequeos/uptime`);
+    if (!resp.ok) return {};
+    const lista = await resp.json();
+    return Object.fromEntries(lista.map(u => [u.sitio_id, u]));
+  } catch {
+    return {};
+  }
+}
+
+function formatoFecha(iso) {
+  const [a, m, d] = iso.split("-");
+  return `${d}/${m}/${a}`;
+}
+
+function formatoUptime(valor) {
+  if (valor === null || valor === undefined) return "—";
+  return (valor === 100 ? "100" : valor.toFixed(2)) + "%";
+}
+
+function claseUptime(valor) {
+  if (valor === null || valor === undefined) return "";
+  if (valor >= 99.5) return "alto";
+  if (valor >= 95) return "medio";
+  return "bajo";
+}
+
+function barraUptime(sitioId) {
+  const u = uptimeCache[sitioId];
+  if (!u) return "";
+
+  const etiquetas = {
+    ok: "Sin caídas",
+    caido: "Caído todo el día",
+    parcial: "Con caídas",
+    sin_datos: "Sin datos",
+  };
+
+  const cuadros = u.dias.map(d => {
+    const detalle = d.estado === "sin_datos"
+      ? "sin chequeos"
+      : `${d.ok} de ${d.chequeos} chequeos disponibles`;
+    return `<span class="dia ${d.estado}" title="${formatoFecha(d.fecha)} · ${etiquetas[d.estado]} (${detalle})"></span>`;
+  }).join("");
+
+  return `
+  <div class="uptime">
+    <div class="uptime-barra">${cuadros}</div>
+    <div class="uptime-cifras">
+      <span>7 días <strong class="${claseUptime(u.uptime_7d)}">${formatoUptime(u.uptime_7d)}</strong></span>
+      <span>30 días <strong class="${claseUptime(u.uptime_30d)}">${formatoUptime(u.uptime_30d)}</strong></span>
+    </div>
+  </div>`;
+}
+
+
 function actualizarResumen(ultimosChequeos) {
   const total = sitiosCache.length;
   const ok = ultimosChequeos.filter(c => c && c.disponible).length;
@@ -138,6 +197,7 @@ function renderSitios(sitios, ultimosChequeos) {
       <button class="secondary btn-chequear" data-id="${sitio.id}">Chequear ahora</button>
     </div>
   </div>
+  ${barraUptime(sitio.id)}
   <div class="historial" id="historial-${sitio.id}">
     <div class="estado-carga">Cargando historial...</div>
   </div>
