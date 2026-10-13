@@ -18,6 +18,7 @@ async function cargarSitios() {
   contenedorSitios.innerHTML = `<div class="estado-carga">Cargando sitios...</div>`;
   try {
     const resp = await apiFetch(`${API_BASE}/sitios/`);
+    if (resp.status === 403) { mostrarSinAcceso(); return; }
     sitiosCache = await resp.json();
     sitiosCache = sitiosCache.filter(s => !s.oculto);
 
@@ -254,6 +255,16 @@ function panelMetricas(sitioId) {
   </div>`;
 }
 
+function mostrarSinAcceso() {
+  document.body.classList.add("sin-acceso");
+  const email = (leerSesion() || {}).email || "Tu cuenta";
+  contenedorSitios.innerHTML = `
+    <div class="sin-acceso-caja">
+      <h2>Tu cuenta no tiene acceso a este panel</h2>
+      <p><strong>${email}</strong> inició sesión correctamente, pero todavía no tiene un rol asignado. Pide a un administrador que te dé acceso.</p>
+    </div>`;
+}
+
 
 function actualizarResumen(ultimosChequeos) {
   const total = sitiosCache.length;
@@ -414,6 +425,11 @@ let rolActual = "";
 async function cargarPerfil() {
   try {
     const resp = await apiFetch(`${API_BASE}/me`);
+    if (resp.status === 403) {
+      document.body.dataset.rol = "sinrol";
+      document.getElementById("usuario-rol").textContent = "Sin acceso";
+      return;
+    }
     if (!resp.ok) return;
     const yo = await resp.json();
     rolActual = yo.rol;
