@@ -9,6 +9,7 @@ const statCaidos = document.getElementById("stat-caidos");
 let sitiosCache = [];
 let ultimosCache = [];
 let uptimeCache = {};
+let historialCache = {};
 let filtroEstado = "todos";
 let textoBusqueda = "";
 let ordenActual = "nombre";
@@ -43,6 +44,7 @@ async function cargarSitios() {
 async function obtenerUltimoChequeo(sitioId) {
   const resp = await apiFetch(`${API_BASE}/chequeos/sitio/${sitioId}`);
   const chequeos = await resp.json();
+  historialCache[sitioId] = chequeos;
   return chequeos[0] || null;
 }
 
@@ -154,6 +156,104 @@ function barraUptime(sitioId) {
   </div>`;
 }
 
+function hace(iso) {
+  const seg = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
+  if (seg < 3600) return `hace ${Math.max(1, Math.round(seg / 60))} min`;
+  if (seg < 86400) return `hace ${Math.round(seg / 3600)} h`;
+  const d = Math.round(seg / 86400);
+  return `hace ${d} ${d === 1 ? "día" : "días"}`;
+}
+
+function anillo(valor) {
+  const r = 26;
+  const c = 2 * Math.PI * r;
+  const off = c * (1 - (valor ?? 0) / 100);
+  return `
+    <svg class="anillo ${claseUptime(valor)}" viewBox="0 0 64 64" aria-hidden="true">
+      <circle class="anillo-fondo" cx="32" cy="32" r="${r}"/>
+      <circle class="anillo-valor" cx="32" cy="32" r="${r}"
+        stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"
+        transform="rotate(-90 32 32)"/>
+    </svg>`;
+}
+
+function sparkline(valores, id) {
+  const v = valores.filter(x => x !== null && x !== undefined);
+  if (v.length < 2) {
+    return `<div class="mini-detalle">Se necesitan al menos 2 chequeos</div>`;
+  }
+  const w = 200, h = 48, pad = 4;
+  const min = Math.min(...v), max = Math.max(...v);
+  const rango = max - min || 1;
+  const paso = w / (v.length - 1);
+  const pts = v.map((x, i) => [i * paso, pad + (h - 2 * pad) * (1 - (x - min) / rango)]);
+  const linea = pts.map((p, i) => `${i ? "L" : "M"}${p[0].toFixed(1)} ${p[1].toFixed(1)}`).join(" ");
+  const area = `${linea} L${w} ${h} L0 ${h} Z`;
+  return `
+    <svg class="spark" viewBox="0 0 ${w} ${h}" preserveAspectRatio="none" aria-hidden="true">
+      <defs>
+        <linearGradient id="g-${id}" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="#67d4c1" stop-opacity="0.35"/>
+          <stop offset="100%" stop-color="#67d4c1" stop-opacity="0"/>
+        </linearGradient>
+      </defs>
+      <path d="${area}" fill="url(#g-${id})"/>
+      <path d="${linea}" fill="none" stroke="#67d4c1" stroke-width="2"
+        stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+    </svg>`;
+}
+
+function panelMetricas(sitioId) {
+  const u = uptimeCache[sitioId];
+  const lista = historialCache[sitioId] || [];
+  const recientes = lista.slice(0, 30).reverse();
+  const tiempos = recientes.map(c => c.tiempo_respuesta_ms);
+  const validos = tiempos.filter(t => t !== null && t !== undefined);
+  const promedio = validos.length
+    ? Math.round(validos.reduce((a, b) => a + b, 0) / validos.length)
+    : null;
+  const caida = lista.find(c => !c.disponible);
+
+  const uptime30 = u ? u.uptime_30d : null;
+  const uptime7 = u ? u.uptime_7d : null;
+
+  const textoCaida = caida ? hace(caida.ejecutado_en) : "Sin caídas";
+  const claseCaida = caida ? "warn" : "ok";
+  const detalleCaida = caida
+    ? new Date(caida.ejecutado_en).toLocaleString("es-PE", { dateStyle: "short", timeStyle: "short" })
+    : "En todo el historial registrado";
+
+  return `
+  <div class="panel-metricas">
+    <div class="mini">
+      <div class="anillo-caja">
+        ${anillo(uptime30)}
+        <span class="anillo-texto">${formatoUptime(uptime30)}</span>
+      </div>
+      <div class="mini-info">
+        <div class="mini-titulo">Disponibilidad</div>
+        <div class="mini-detalle">30 días · 7 días: <strong class="${claseUptime(uptime7)}">${formatoUptime(uptime7)}</strong></div>
+      </div>
+    </div>
+
+    <div class="mini mini-resp">
+      <div class="mini-info">
+        <div class="mini-titulo">Tiempo de respuesta</div>
+        <div class="mini-detalle">Promedio <strong>${promedio ?? "—"} ms</strong> · ${validos.length} chequeos</div>
+      </div>
+      ${sparkline(tiempos, sitioId)}
+    </div>
+
+    <div class="mini">
+      <div class="mini-info">
+        <div class="mini-titulo">Última caída</div>
+        <div class="mini-valor ${claseCaida}">${textoCaida}</div>
+        <div class="mini-detalle">${detalleCaida}</div>
+      </div>
+    </div>
+  </div>`;
+}
+
 
 function actualizarResumen(ultimosChequeos) {
   const total = sitiosCache.length;
@@ -197,7 +297,7 @@ function renderSitios(sitios, ultimosChequeos) {
       <button class="secondary btn-chequear" data-id="${sitio.id}">Chequear ahora</button>
     </div>
   </div>
-  ${barraUptime(sitio.id)}
+  ${panelMetricas(sitio.id)}  
   <div class="historial" id="historial-${sitio.id}">
     <div class="estado-carga">Cargando historial...</div>
   </div>
