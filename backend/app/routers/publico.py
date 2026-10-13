@@ -1,4 +1,6 @@
 import time
+import os
+
 from collections import defaultdict, deque
 from threading import BoundedSemaphore, Lock
 
@@ -9,14 +11,14 @@ from app.services.auditoria_publica import UrlNoPermitida, auditar_url
 
 router = APIRouter(prefix="/publico", tags=["Público"])
 
-_VENTANA_SEG = 600
-_MAX_POR_IP = 5
-_MAX_GLOBAL_HORA = 120
+_VENTANA_SEG = 3600
+_MAX_POR_IP = 3
+_MAX_GLOBAL_HORA = 40
 
 _candado = Lock()
 _por_ip: dict[str, deque] = defaultdict(deque)
 _global: deque = deque()
-_slots = BoundedSemaphore(3)
+_slots = BoundedSemaphore(2)
 
 
 class AuditoriaPedido(BaseModel):
@@ -50,6 +52,8 @@ def _limitar(ip: str) -> None:
 
 @router.post("/auditoria")
 def auditoria_publica(datos: AuditoriaPedido, request: Request):
+    if os.getenv("AUDITORIA_PUBLICA", "off").lower() != "on":
+        raise HTTPException(status_code=503, detail="El diagnóstico gratuito no está disponible por el momento.")
     _limitar(_ip_cliente(request))
     if not _slots.acquire(blocking=False):
         raise HTTPException(status_code=503, detail="Hay muchos análisis en curso. Intenta de nuevo en un momento.")
