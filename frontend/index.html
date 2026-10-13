@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Diagnóstico gratuito de tu sitio web · ConsigueVentas</title>
+  <meta name="description" content="Analiza gratis la disponibilidad, el certificado SSL, la velocidad, la seguridad y el SEO básico de tu sitio web en segundos.">
+  <meta name="color-scheme" content="dark">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="icon" type="image/png" href="assets/img/favicon.png">
+  <style>
+    :root {
+      --bg: #0b1018; --panel: #0f1420; --card: #131a28;
+      --borde: rgba(255,255,255,.08); --borde-f: rgba(255,255,255,.16);
+      --texto: #eef1f6; --dim: #8b97ad; --tenue: #66738b;
+      --acc: #67d4c1; --acc2: #7fe0cf;
+      --ok: #67d4c1; --aviso: #fbbf24; --crit: #f87171;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    [hidden] { display: none !important; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+      line-height: 1.5;
+      color: var(--texto);
+      background:
+        radial-gradient(900px 500px at 15% -5%, rgba(103,212,193,.11), transparent 60%),
+        radial-gradient(700px 500px at 100% 0%, rgba(37,99,235,.08), transparent 60%),
+        var(--bg);
+      background-attachment: fixed;
+      -webkit-font-smoothing: antialiased;
+    }
+    body::before {
+      content: ""; position: fixed; inset: 0; z-index: 0; pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.035) 1px, transparent 1px);
+      background-size: 44px 44px;
+      -webkit-mask-image: radial-gradient(ellipse at 50% 0%, #000 10%, transparent 70%);
+      mask-image: radial-gradient(ellipse at 50% 0%, #000 10%, transparent 70%);
+    }
+    .contenedor { position: relative; z-index: 1; max-width: 1080px; margin: 0 auto; padding: 0 1.5rem; }
+
+    /* Barra superior */
+    .barra { display: flex; justify-content: space-between; align-items: center; padding: 1.4rem 0; }
+    .marca { display: flex; align-items: center; gap: .8rem; font-weight: 700; }
+    .marca img { width: 40px; height: 40px; border-radius: 10px; }
+    .marca small { display: block; font-weight: 500; font-size: .74rem; color: var(--dim); }
+    .acceso { color: var(--dim); font-size: .85rem; font-weight: 600; text-decoration: none; padding: .45rem .9rem; border: 1px solid var(--borde); border-radius: 999px; transition: .15s; }
+    .acceso:hover { color: var(--texto); border-color: var(--borde-f); }
+
+    /* Hero */
+    .hero { text-align: center; padding: clamp(2.5rem, 7vw, 5rem) 0 2rem; }
+    .etiqueta { display: inline-block; padding: .3rem .8rem; border-radius: 999px; background: rgba(103,212,193,.12); border: 1px solid rgba(103,212,193,.25); color: var(--acc); font-size: .74rem; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+    .hero h1 { margin: 1.1rem auto .9rem; max-width: 18ch; font-size: clamp(2rem, 5.2vw, 3.4rem); line-height: 1.12; font-weight: 800; letter-spacing: -.03em; }
+    .hero h1 span { color: var(--acc); }
+    .hero > p { max-width: 54ch; margin: 0 auto; color: var(--dim); font-size: 1.05rem; }
+
+    .analisis {
+      display: flex; gap: .6rem; max-width: 660px; margin: 2rem auto 0; padding: .5rem;
+      border: 1px solid var(--borde-f); border-radius: 16px; background: rgba(15,20,32,.88);
+      box-shadow: 0 20px 50px rgba(0,0,0,.35); transition: border-color .15s, box-shadow .15s;
+    }
+    .analisis:focus-within { border-color: var(--acc); box-shadow: 0 20px 50px rgba(0,0,0,.35), 0 0 0 3px rgba(103,212,193,.16); }
+    .analisis input { flex: 1; min-width: 0; height: 52px; padding: 0 1rem; border: none; background: transparent; color: inherit; font: inherit; font-size: 1.05rem; outline: none; }
+    .analisis input::placeholder { color: var(--tenue); }
+    .btn { height: 52px; padding: 0 1.5rem; border: none; border-radius: 11px; background: var(--acc); color: #06231e; font: inherit; font-weight: 700; font-size: .98rem; cursor: pointer; white-space: nowrap; box-shadow: 0 6px 20px rgba(103,212,193,.18); transition: background .15s, transform .1s; }
+    .btn:hover { background: var(--acc2); }
+    .btn:active { transform: translateY(1px); }
+    .btn:disabled { opacity: .7; cursor: wait; }
+    .btn.secundario { background: transparent; color: var(--texto); border: 1px solid var(--borde-f); box-shadow: none; }
+    .btn.secundario:hover { background: rgba(255,255,255,.05); border-color: var(--acc); }
+    .error { display: none; max-width: 660px; margin: 1rem auto 0; padding: .7rem .95rem; border-radius: 10px; font-size: .9rem; text-align: left; background: rgba(248,113,113,.10); border: 1px solid rgba(248,113,113,.35); color: #fca5a5; }
+    .error.visible { display: block; }
+    .nota { margin-top: 1rem; color: var(--tenue); font-size: .82rem; }
+
+    /* Cargando */
+    .cargando { text-align: center; padding: 3rem 0; }
+    .spinner { width: 42px; height: 42px; margin: 0 auto 1.1rem; border: 3px solid var(--borde-f); border-top-color: var(--acc); border-radius: 50%; animation: giro .8s linear infinite; }
+    @keyframes giro { to { transform: rotate(360deg); } }
+    .cargando p { color: var(--dim); }
+
+    /* Resultado */
+    .resultado { padding: 1rem 0 2rem; }
+    .resumen { display: flex; align-items: center; gap: 2rem; padding: 1.8rem; border: 1px solid var(--borde); border-radius: 18px; background: var(--card); }
+    .anillo-caja { position: relative; flex: 0 0 auto; width: 140px; height: 140px; }
+    .anillo { width: 100%; height: 100%; }
+    .a-fondo { fill: none; stroke: rgba(255,255,255,.08); stroke-width: 10; }
+    .a-valor { fill: none; stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 1s ease; }
+    .anillo.ok .a-valor { stroke: var(--ok); }
+    .anillo.atencion .a-valor { stroke: var(--aviso); }
+    .anillo.critico .a-valor { stroke: var(--crit); }
+    .puntaje-texto { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 2.3rem; font-weight: 800; letter-spacing: -.03em; line-height: 1; }
+    .puntaje-texto small { margin-top: .25rem; font-size: .7rem; font-weight: 600; color: var(--tenue); letter-spacing: .06em; }
+    .resumen-url { color: var(--tenue); font-size: .82rem; word-break: break-all; }
+    .resumen h2 { margin: .25rem 0 .4rem; font-size: 1.5rem; letter-spacing: -.02em; }
+    .resumen p { color: var(--dim); }
+    .resumen .acciones { margin-top: 1rem; }
+    .resumen .acciones .btn { height: 42px; font-size: .88rem; }
+
+    .categorias { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .cat { padding: 1.25rem; border: 1px solid var(--borde); border-radius: 14px; background: var(--card); }
+    .cat-cabeza { display: flex; justify-content: space-between; align-items: center; gap: .6rem; }
+    .cat-titulo { font-weight: 700; }
+    .chip { padding: .2rem .65rem; border-radius: 999px; font-size: .72rem; font-weight: 700; }
+    .chip.ok { background: rgba(103,212,193,.12); color: var(--ok); }
+    .chip.atencion { background: rgba(251,191,36,.12); color: var(--aviso); }
+    .chip.critico { background: rgba(248,113,113,.12); color: var(--crit); }
+    .cat-puntaje { margin-top: .7rem; font-size: 1.8rem; font-weight: 800; letter-spacing: -.03em; }
+    .cat-puntaje small { font-size: .8rem; font-weight: 600; color: var(--tenue); }
+    .barra-prog { height: 6px; margin: .5rem 0 .8rem; border-radius: 99px; background: rgba(255,255,255,.08); overflow: hidden; }
+    .barra-prog i { display: block; height: 100%; border-radius: 99px; width: 0; transition: width .9s ease; }
+    .cat.ok .barra-prog i { background: var(--ok); }
+    .cat.atencion .barra-prog i { background: var(--aviso); }
+    .cat.critico .barra-prog i { background: var(--crit); }
+    .cat-resumen { color: var(--dim); font-size: .88rem; }
+    .hallazgos { list-style: none; margin-top: .9rem; padding-top: .9rem; border-top: 1px solid var(--borde); display: grid; gap: .5rem; }
+    .hallazgos li { display: flex; gap: .55rem; align-items: flex-start; font-size: .86rem; color: var(--texto); }
+    .hallazgos .marca-h { flex: 0 0 auto; width: 18px; height: 18px; margin-top: 2px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: .7rem; font-weight: 800; }
+    .hallazgos .si .marca-h { background: rgba(103,212,193,.15); color: var(--ok); }
+    .hallazgos .no .marca-h { background: rgba(248,113,113,.15); color: var(--crit); }
+    .hallazgos .no { color: #fecaca; }
+
+    /* Formulario de contacto */
+    .puerta { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-top: 1rem; padding: 1.8rem; border: 1px solid rgba(103,212,193,.3); border-radius: 18px; background: linear-gradient(180deg, rgba(103,212,193,.07), transparent 70%), var(--card); }
+    .puerta h3 { font-size: 1.35rem; letter-spacing: -.02em; margin-bottom: .6rem; }
+    .puerta .lista { list-style: none; margin-top: 1rem; display: grid; gap: .55rem; color: var(--dim); font-size: .92rem; }
+    .puerta .lista li::before { content: "✓"; color: var(--acc); font-weight: 800; margin-right: .55rem; }
+    .campo { margin-bottom: .9rem; }
+    .campo label { display: block; margin-bottom: .35rem; font-size: .8rem; font-weight: 600; color: #b4bfd1; }
+    .campo input[type=text], .campo input[type=email], .campo input[type=tel] { width: 100%; height: 46px; padding: 0 .9rem; border-radius: 10px; border: 1px solid var(--borde-f); background: var(--bg); color: var(--texto); font: inherit; font-size: .95rem; transition: border-color .15s, box-shadow .15s; }
+    .campo input:focus { outline: none; border-color: var(--acc); box-shadow: 0 0 0 3px rgba(103,212,193,.16); }
+    .consent { display: flex; gap: .6rem; align-items: flex-start; margin: .2rem 0 1rem; font-size: .8rem; color: var(--dim); }
+    .consent input { margin-top: 3px; accent-color: var(--acc); }
+    .trampa { position: absolute; left: -9999px; width: 1px; height: 1px; opacity: 0; }
+    .puerta .btn { width: 100%; }
+    .exito { margin-top: 1rem; padding: 1.2rem 1.4rem; border-radius: 14px; border: 1px solid rgba(103,212,193,.3); background: rgba(103,212,193,.08); display: flex; justify-content: space-between; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .exito strong { display: block; margin-bottom: .15rem; }
+    .exito span { color: var(--dim); font-size: .9rem; }
+    .exito .btn { height: 44px; text-decoration: none; display: inline-flex; align-items: center; font-size: .9rem; }
+
+    /* Información */
+    .info { padding: 3rem 0 1rem; }
+    .info h2 { text-align: center; font-size: 1.6rem; letter-spacing: -.02em; margin-bottom: 1.6rem; }
+    .pasos, .revisamos { display: grid; gap: 1rem; }
+    .pasos { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); margin-bottom: 3rem; }
+    .paso { padding: 1.3rem; border: 1px solid var(--borde); border-radius: 14px; background: var(--card); }
+    .paso b { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; margin-bottom: .7rem; border-radius: 9px; background: rgba(103,212,193,.12); color: var(--acc); font-weight: 800; }
+    .paso h3 { font-size: 1rem; margin-bottom: .3rem; }
+    .paso p, .rev p { color: var(--dim); font-size: .88rem; }
+    .revisamos { grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); }
+    .rev { padding: 1.1rem; border: 1px solid var(--borde); border-radius: 14px; background: rgba(255,255,255,.02); }
+    .rev h3 { font-size: .95rem; margin-bottom: .25rem; }
+
+    footer { position: relative; z-index: 1; margin-top: 3rem; padding: 2rem 0 2.5rem; border-top: 1px solid var(--borde); color: var(--tenue); font-size: .8rem; }
+    footer .contenedor { display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    footer a { color: var(--dim); }
+    .privacidad { max-width: 70ch; }
+
+    @media (max-width: 760px) {
+      .analisis { flex-direction: column; }
+      .btn { width: 100%; }
+      .resumen { flex-direction: column; text-align: center; }
+      .puerta { grid-template-columns: 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+  </style>
+</head>
+<body>
+  <div class="contenedor">
+    <header class="barra">
+      <div class="marca">
+        <img src="assets/img/logo.png" alt="ConsigueVentas">
+        <div>ConsigueVentas<small>Diagnóstico web</small></div>
+      </div>
+      <a class="acceso" href="login.html">Acceso interno</a>
+    </header>
+
+    <section class="hero">
+      <span class="etiqueta">Diagnóstico gratuito</span>
+      <h1>Descubre qué tan sano está <span>tu sitio web</span></h1>
+      <p>Revisamos en segundos la disponibilidad, el certificado SSL, la velocidad, la seguridad y el SEO básico de tu página.</p>
+
+      <form class="analisis" id="form-analisis" novalidate>
+        <input type="text" id="url" inputmode="url" placeholder="tusitio.com" autocomplete="off" aria-label="Dirección de tu sitio web">
+        <button type="submit" class="btn" id="btn-analizar">Analizar mi sitio</button>
+      </form>
+      <div class="error" id="error-analisis" role="alert" aria-live="polite"></div>
+      <p class="nota">Sin registro · Resultado en segundos · No modificamos tu sitio</p>
+    </section>
+
+    <section class="cargando" id="cargando" hidden>
+      <div class="spinner"></div>
+      <p id="texto-carga">Analizando tu sitio…</p>
+    </section>
+
+    <section class="resultado" id="resultado" hidden>
+      <div class="resumen">
+        <div class="anillo-caja">
+          <div id="res-anillo"></div>
+          <div class="puntaje-texto"><span id="res-puntaje">0</span><small>DE 100</small></div>
+        </div>
+        <div>
+          <div class="resumen-url" id="res-url"></div>
+          <h2 id="res-titulo"></h2>
+          <p id="res-problemas"></p>
+          <div class="acciones"><button type="button" class="btn secundario" id="btn-otro">Analizar otro sitio</button></div>
+        </div>
+      </div>
+
+      <div class="categorias" id="res-categorias"></div>
+
+      <div class="puerta" id="puerta">
+        <div>
+          <h3>Recibe el informe completo</h3>
+          <p style="color: var(--dim);">Deja tus datos para ver el detalle de cada revisión y saber exactamente qué mejorar.</p>
+          <ul class="lista">
+            <li>Hallazgos detallados de las cinco categorías</li>
+            <li>Qué está bien y qué conviene corregir primero</li>
+            <li>Un especialista de ConsigueVentas puede contactarte si lo deseas</li>
+          </ul>
+        </div>
+        <form id="form-lead" novalidate>
+          <div class="campo"><label for="nombre">Nombre</label><input type="text" id="nombre" autocomplete="name" maxlength="120"></div>
+          <div class="campo"><label for="correo">Correo electrónico</label><input type="email" id="correo" autocomplete="email" maxlength="160"></div>
+          <div class="campo"><label for="telefono">Teléfono o WhatsApp (opcional)</label><input type="tel" id="telefono" autocomplete="tel" maxlength="30"></div>
+          <input type="text" id="website" class="trampa" tabindex="-1" autocomplete="off" aria-hidden="true">
+          <label class="consent"><input type="checkbox" id="consentimiento"><span>Acepto que ConsigueVentas use mis datos para enviarme el informe y contactarme sobre mejoras para mi sitio web.</span></label>
+          <button type="submit" class="btn" id="btn-lead">Ver informe completo</button>
+          <div class="error" id="error-lead" role="alert" aria-live="polite"></div>
+        </form>
+      </div>
+
+      <div class="exito" id="exito" hidden>
+        <div><strong>¡Listo! Este es tu informe completo.</strong><span>Si quieres ayuda para corregir los puntos marcados, escríbenos.</span></div>
+        <a class="btn" id="btn-whatsapp" href="#" target="_blank" rel="noopener" hidden>Hablar con un especialista</a>
+      </div>
+    </section>
+
+    <section class="info">
+      <h2>Cómo funciona</h2>
+      <div class="pasos">
+        <div class="paso"><b>1</b><h3>Escribe tu dirección</h3><p>Ingresa la dirección de tu sitio web. No necesitas crear una cuenta.</p></div>
+        <div class="paso"><b>2</b><h3>Analizamos tu sitio</h3><p>Hacemos una visita automática y revisamos cinco aspectos clave.</p></div>
+        <div class="paso"><b>3</b><h3>Recibe tu informe</h3><p>Ves tu puntaje al instante y, con tus datos, el detalle completo.</p></div>
+      </div>
+      <h2>Qué revisamos</h2>
+      <div class="revisamos">
+        <div class="rev"><h3>Disponibilidad</h3><p>Que tu sitio responda y cargue correctamente.</p></div>
+        <div class="rev"><h3>Certificado SSL</h3><p>Conexión segura y fecha de vencimiento.</p></div>
+        <div class="rev"><h3>Velocidad</h3><p>Tiempo de respuesta, compresión y caché.</p></div>
+        <div class="rev"><h3>Seguridad</h3><p>Cabeceras de protección del navegador.</p></div>
+        <div
