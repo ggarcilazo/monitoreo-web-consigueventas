@@ -2,6 +2,8 @@ import html
 import os
 import secrets
 import time
+import httpx
+
 from collections import defaultdict, deque
 from threading import BoundedSemaphore, Lock
 
@@ -34,6 +36,7 @@ _informes: dict[str, tuple[float, dict]] = {}
 
 class AuditoriaPedido(BaseModel):
     url: str = Field(min_length=3, max_length=300)
+    turnstile: str = Field(default="", max_length=2048)
 
 
 def _verificar_activo() -> None:
@@ -46,6 +49,25 @@ def _ip_cliente(request: Request) -> str:
     if xff:
         return xff.split(",")[-1].strip()
     return request.client.host if request.client else "desconocida"
+
+def _verificar_turnstile(token: str) -> None:
+    secreto = os.getenv("TURNSTILE_SECRET", "")
+    if not secreto:
+        raise HTTPException(status_code=503, detail="La verificación de seguridad no está configurada.")
+    if not token:
+        raise HTTPException(status_code=400, detail="Completa la verificación de seguridad antes de analizar.")
+    try:
+        r = httpx.post(
+            "https://challenges.cloudflare.com/turnstile/v0/siteverify",
+            data={"secret": secreto, "response": token},
+            timeout=8,
+        )
+        ok = r.status_code == 200 and r.json().get("success") is True
+    except Exception:
+        raise HTTPException(status_code=503, detail="No se pudo verificar la seguridad. Inténtalo de nuevo.")
+    if not ok:
+        raise HTTPException(status_code=400, detail="No pasaste la verificación de seguridad. Recarga la página e inténtalo de nuevo.")
+
 
 
 def _limitar(ip: str) -> None:
@@ -125,6 +147,7 @@ def _avisar_lead(lead: Lead) -> None:
 @router.post("/auditoria")
 def auditoria_publica(datos: AuditoriaPedido, request: Request):
     _verificar_activo()
+    _verificar_turnstile(datos.turnstile)
     _limitar(_ip_cliente(request))
     if not _slots.acquire(blocking=False):
         raise HTTPException(status_code=503, detail="Hay muchos análisis en curso. Intenta de nuevo en un momento.")

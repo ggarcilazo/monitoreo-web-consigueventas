@@ -374,8 +374,11 @@ def _cat_seguridad(cab, html: str, es_https: bool, redirige_https) -> dict:
          "No expone versiones de software", "Expone versiones de software: " + ", ".join(versiones), *EXPLICA["versiones"]),
     ]
     puntaje, cumplidos, total, hallazgos = _evaluar(checks)
-    return _cat("seguridad", "Seguridad", puntaje,
-                f"Cumple {cumplidos} de {total} comprobaciones de seguridad básicas.", hallazgos)
+    cat = _cat("seguridad", "Seguridad", puntaje,
+               f"Cumple {cumplidos} de {total} comprobaciones de seguridad básicas.", hallazgos)
+    if es_https and cat["estado"] == "critico":
+        cat["estado"] = "atencion"
+    return cat
 
 
 def _cat_seo(html: str, es_https: bool, robots, sitemap) -> dict:

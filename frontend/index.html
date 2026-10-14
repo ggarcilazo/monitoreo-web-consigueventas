@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -167,6 +168,7 @@
       .puerta { grid-template-columns: 1fr; }
     }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
+    .ts-caja { display: flex; justify-content: center; margin-top: 1rem; }
   </style>
 </head>
 <body>
@@ -188,6 +190,7 @@
         <input type="text" id="url" inputmode="url" placeholder="tusitio.com" autocomplete="off" aria-label="Dirección de tu sitio web">
         <button type="submit" class="btn" id="btn-analizar">Analizar mi sitio</button>
       </form>
+      <div class="ts-caja" id="ts-caja"></div>
       <div class="error" id="error-analisis" role="alert" aria-live="polite"></div>
       <p class="nota">Sin registro · Resultado en segundos · No modificamos tu sitio</p>
     </section>
@@ -276,6 +279,25 @@
 
     let vista = null;
     let temporizador = null;
+    const TURNSTILE_SITE_KEY = "0x4AAAAAAFWw1rnOymxh_U6K";
+    let tsId = null;
+    let tsToken = "";
+
+    function iniciarTurnstile() {
+      if (!window.turnstile) { setTimeout(iniciarTurnstile, 300); return; }
+      tsId = window.turnstile.render("#ts-caja", {
+        sitekey: TURNSTILE_SITE_KEY,
+        theme: "dark",
+        callback: (t) => { tsToken = t; },
+        "expired-callback": () => { tsToken = ""; },
+        "error-callback": () => { tsToken = ""; },
+      });
+    }
+    function reiniciarTurnstile() {
+      tsToken = "";
+      if (window.turnstile && tsId !== null) window.turnstile.reset(tsId);
+    }
+    iniciarTurnstile();
 
     const PASOS_CARGA = [
       "Verificando disponibilidad…", "Revisando el certificado SSL…", "Midiendo la velocidad…",
@@ -389,12 +411,12 @@
       ocultarError($("error-analisis"));
       const url = $("url").value.trim();
       if (url.length < 3) { mostrarError($("error-analisis"), "Escribe la dirección de tu sitio web, por ejemplo tusitio.com"); return; }
-
+      if (!tsToken) { mostrarError($("error-analisis"), "Espera un momento a que termine la verificación de seguridad e inténtalo de nuevo."); return; }
       $("btn-analizar").disabled = true;
       $("btn-analizar").textContent = "Analizando…";
       iniciarCarga();
       try {
-        const resp = await llamar("/publico/auditoria", { url });
+        const resp = await llamar("/publico/auditoria", { url, turnstile: tsToken });
         terminarCarga();
         if (!resp.ok) { mostrarError($("error-analisis"), await leerError(resp)); return; }
         mostrarVistaPrevia(await resp.json());
@@ -402,8 +424,9 @@
         terminarCarga();
         mostrarError($("error-analisis"), "No pudimos conectar con el servicio. Revisa tu conexión e inténtalo otra vez.");
       } finally {
-        $("btn-analizar").disabled = false;
+         $("btn-analizar").disabled = false;
         $("btn-analizar").textContent = "Analizar mi sitio";
+        reiniciarTurnstile();
       }
     });
 
