@@ -670,3 +670,10 @@ body.sin-acceso #btn-chequear-todos { display: none; }
 .sin-acceso-caja strong { color: var(--text); }
 
 body[data-rol="sinrol"] .rol-chip { background: var(--error-bg); color: var(--error); }
+
+    .hallazgos li > div { min-width: 0; }
+    .explica { margin-top: .45rem; padding: .6rem .75rem; border-radius: 9px; background: rgba(255,255,255,.04); border-left: 2px solid var(--crit); color: var(--dim); font-size: .8rem; line-height: 1.45; }
+    .explica p + p { margin-top: .3rem; }
+    .explica b { color: var(--texto); font-weight: 600; }
+
+    

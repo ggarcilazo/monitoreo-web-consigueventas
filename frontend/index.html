@@ -323,8 +323,12 @@
 
     function tarjeta(c, detalle) {
       const lista = detalle && c.hallazgos
-        ? `<ul class="hallazgos">${c.hallazgos.map((h) =>
-            `<li class="${h.ok ? "si" : "no"}"><span class="marca-h">${h.ok ? "✓" : "✕"}</span><span>${esc(h.texto)}</span></li>`).join("")}</ul>`
+        ? `<ul class="hallazgos">${c.hallazgos.map((h) => {
+            const explica = !h.ok && h.importa
+              ? `<div class="explica"><p><b>Por qué importa:</b> ${esc(h.importa)}</p><p><b>Cómo corregirlo:</b> ${esc(h.solucion)}</p></div>`
+              : "";
+            return `<li class="${h.ok ? "si" : "no"}"><span class="marca-h">${h.ok ? "✓" : "✕"}</span><div>${esc(h.texto)}${explica}</div></li>`;
+          }).join("")}</ul>`
         : "";
       return `<article class="cat ${esc(c.estado)}">
         <div class="cat-cabeza"><span class="cat-titulo">${esc(c.titulo)}</span><span class="chip ${esc(c.estado)}">${ETIQUETA[c.estado] || ""}</span></div>
