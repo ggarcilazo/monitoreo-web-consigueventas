@@ -176,7 +176,7 @@
         <img src="assets/img/logo.png" alt="ConsigueVentas">
         <div>ConsigueVentas<small>Diagnóstico web</small></div>
       </div>
-      <a class="acceso" href="login.html">Acceso interno</a>
+      <a class="acceso" id="acceso" href="login.html" hidden>Acceso interno</a>
     </header>
 
     <section class="hero">
@@ -261,7 +261,7 @@
   <footer>
     <div class="contenedor">
       <div class="privacidad">Usamos tu nombre, correo y teléfono únicamente para enviarte el informe y contactarte sobre mejoras para tu sitio web. Puedes pedir que eliminemos tus datos contactando a la agencia. Este diagnóstico es informativo y automático.</div>
-      <div>© 2026 ConsigueVentas · <a href="login.html">Acceso interno</a></div>
+      <div>© 2026 ConsigueVentas</div>    
     </div>
   </footer>
 
@@ -440,6 +440,28 @@
       $("url").value = "";
       window.scrollTo({ top: 0, behavior: "smooth" });
       $("url").focus();
+    });
+        // Acceso interno oculto: 5 clics rápidos sobre el logo, o escribir "interno"
+    const accesoLink = $("acceso");
+    function revelarAcceso() {
+      accesoLink.hidden = false;
+      try { sessionStorage.setItem("acceso_visible", "1"); } catch {}
+    }
+    try { if (sessionStorage.getItem("acceso_visible") === "1") accesoLink.hidden = false; } catch {}
+
+    let clics = [];
+    document.querySelector(".marca").addEventListener("click", () => {
+      const ahora = Date.now();
+      clics = clics.filter((t) => ahora - t < 3000);
+      clics.push(ahora);
+      if (clics.length >= 5) { clics = []; revelarAcceso(); }
+    });
+
+    let tecleado = "";
+    document.addEventListener("keydown", (e) => {
+      if (e.target.matches("input, textarea") || e.key.length !== 1) return;
+      tecleado = (tecleado + e.key.toLowerCase()).slice(-7);
+      if (tecleado === "interno") revelarAcceso();
     });
   </script>})();
 </body>
