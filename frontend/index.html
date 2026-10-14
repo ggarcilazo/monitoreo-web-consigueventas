@@ -184,7 +184,7 @@
       <h1>Descubre qué tan sano está <span>tu sitio web</span></h1>
       <p>Revisamos en segundos la disponibilidad, el certificado SSL, la velocidad, la seguridad y el SEO básico de tu página.</p>
 
-      <form class="analisis" id="form-analisis" novalidate>
+      <form class="analisis" id="form-analisis" novalidate onsubmit="return false;">
         <input type="text" id="url" inputmode="url" placeholder="tusitio.com" autocomplete="off" aria-label="Dirección de tu sitio web">
         <button type="submit" class="btn" id="btn-analizar">Analizar mi sitio</button>
       </form>
@@ -223,7 +223,7 @@
             <li>Un especialista de ConsigueVentas puede contactarte si lo deseas</li>
           </ul>
         </div>
-        <form id="form-lead" novalidate>
+        <form id="form-lead" novalidate onsubmit="return false;">
           <div class="campo"><label for="nombre">Nombre</label><input type="text" id="nombre" autocomplete="name" maxlength="120"></div>
           <div class="campo"><label for="correo">Correo electrónico</label><input type="email" id="correo" autocomplete="email" maxlength="160"></div>
           <div class="campo"><label for="telefono">Teléfono o WhatsApp (opcional)</label><input type="tel" id="telefono" autocomplete="tel" maxlength="30"></div>
@@ -253,4 +253,194 @@
         <div class="rev"><h3>Certificado SSL</h3><p>Conexión segura y fecha de vencimiento.</p></div>
         <div class="rev"><h3>Velocidad</h3><p>Tiempo de respuesta, compresión y caché.</p></div>
         <div class="rev"><h3>Seguridad</h3><p>Cabeceras de protección del navegador.</p></div>
-        <div
+        <div class="rev"><h3>SEO básico</h3><p>Título, descripción, móviles y encabezados.</p></div>
+      </div>
+    </section>
+  </div>
+
+  <footer>
+    <div class="contenedor">
+      <div class="privacidad">Usamos tu nombre, correo y teléfono únicamente para enviarte el informe y contactarte sobre mejoras para tu sitio web. Puedes pedir que eliminemos tus datos contactando a la agencia. Este diagnóstico es informativo y automático.</div>
+      <div>© 2026 ConsigueVentas · <a href="login.html">Acceso interno</a></div>
+    </div>
+  </footer>
+
+  <script>
+    const API_BASE = "https://consigueventas.duckdns.org/api";
+    const WHATSAPP = ""; // Ejemplo: "51999999999". Si está vacío, el botón no se muestra.
+
+    const $ = (id) => document.getElementById(id);
+    const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+    const estadoDe = (p) => (p >= 80 ? "ok" : p >= 50 ? "atencion" : "critico");
+    const ETIQUETA = { ok: "Bien", atencion: "Mejorable", critico: "Crítico" };
+
+    let vista = null;
+    let temporizador = null;
+
+    const PASOS_CARGA = [
+      "Verificando disponibilidad…", "Revisando el certificado SSL…", "Midiendo la velocidad…",
+      "Revisando las cabeceras de seguridad…", "Evaluando el SEO básico…",
+    ];
+
+    function mostrarError(el, texto) { el.textContent = texto; el.classList.add("visible"); }
+    function ocultarError(el) { el.classList.remove("visible"); }
+
+    async function llamar(ruta, cuerpo) {
+      const ctrl = new AbortController();
+      const t = setTimeout(() => ctrl.abort(), 40000);
+      try {
+        return await fetch(API_BASE + ruta, {
+          method: "POST", headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(cuerpo), signal: ctrl.signal,
+        });
+      } finally { clearTimeout(t); }
+    }
+
+    async function leerError(resp) {
+      let msg = "Ocurrió un problema. Inténtalo de nuevo en un momento.";
+      try {
+        const j = await resp.json();
+        if (typeof j.detail === "string") msg = j.detail;
+        else if (resp.status === 422) msg = "Revisa los datos: la dirección, el correo o el teléfono no parecen válidos.";
+      } catch {}
+      return msg;
+    }
+
+    function anillo(puntaje) {
+      const r = 52, c = 2 * Math.PI * r, off = c * (1 - puntaje / 100);
+      return `<svg class="anillo ${estadoDe(puntaje)}" viewBox="0 0 120 120" aria-hidden="true">
+        <circle class="a-fondo" cx="60" cy="60" r="${r}"/>
+        <circle class="a-valor" cx="60" cy="60" r="${r}" stroke-dasharray="${c.toFixed(1)}" stroke-dashoffset="${c.toFixed(1)}" data-off="${off.toFixed(1)}" transform="rotate(-90 60 60)"/>
+      </svg>`;
+    }
+
+    function animar() {
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        document.querySelectorAll(".a-valor").forEach((c) => { c.style.strokeDashoffset = c.dataset.off; });
+        document.querySelectorAll(".barra-prog i").forEach((b) => { b.style.width = b.dataset.w + "%"; });
+      }));
+    }
+
+    function tarjeta(c, detalle) {
+      const lista = detalle && c.hallazgos
+        ? `<ul class="hallazgos">${c.hallazgos.map((h) =>
+            `<li class="${h.ok ? "si" : "no"}"><span class="marca-h">${h.ok ? "✓" : "✕"}</span><span>${esc(h.texto)}</span></li>`).join("")}</ul>`
+        : "";
+      return `<article class="cat ${esc(c.estado)}">
+        <div class="cat-cabeza"><span class="cat-titulo">${esc(c.titulo)}</span><span class="chip ${esc(c.estado)}">${ETIQUETA[c.estado] || ""}</span></div>
+        <div class="cat-puntaje">${c.puntaje}<small> / 100</small></div>
+        <div class="barra-prog"><i data-w="${c.puntaje}"></i></div>
+        <p class="cat-resumen">${esc(c.resumen)}</p>${lista}
+      </article>`;
+    }
+
+    function titulo(p) {
+      if (p >= 80) return "Tu sitio está en buen estado";
+      if (p >= 50) return "Tu sitio tiene aspectos por mejorar";
+      return "Tu sitio necesita atención";
+    }
+
+    function mostrarVistaPrevia(d) {
+      vista = d;
+      $("res-url").textContent = d.url_final || d.url;
+      $("res-puntaje").textContent = d.puntaje_global;
+      $("res-anillo").innerHTML = anillo(d.puntaje_global);
+      $("res-titulo").textContent = titulo(d.puntaje_global);
+      $("res-problemas").textContent = d.problemas === 0
+        ? "No encontramos problemas en esta revisión."
+        : `Encontramos ${d.problemas} ${d.problemas === 1 ? "punto" : "puntos"} por mejorar. Deja tus datos para ver el detalle.`;
+      $("res-categorias").innerHTML = d.categorias.map((c) => tarjeta(c, false)).join("");
+      $("puerta").hidden = false;
+      $("exito").hidden = true;
+      ocultarError($("error-lead"));
+      $("resultado").hidden = false;
+      animar();
+      $("resultado").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function mostrarInformeCompleto(inf) {
+      $("res-categorias").innerHTML = inf.categorias.map((c) => tarjeta(c, true)).join("");
+      $("puerta").hidden = true;
+      $("exito").hidden = false;
+      if (WHATSAPP) {
+        const texto = encodeURIComponent(`Hola, hice el diagnóstico de ${inf.url} y quisiera ayuda para mejorarlo.`);
+        $("btn-whatsapp").href = `https://wa.me/${WHATSAPP}?text=${texto}`;
+        $("btn-whatsapp").hidden = false;
+      }
+      animar();
+      $("res-categorias").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    function iniciarCarga() {
+      let i = 0;
+      $("texto-carga").textContent = PASOS_CARGA[0];
+      temporizador = setInterval(() => { i = (i + 1) % PASOS_CARGA.length; $("texto-carga").textContent = PASOS_CARGA[i]; }, 1300);
+      $("cargando").hidden = false;
+      $("resultado").hidden = true;
+    }
+    function terminarCarga() { clearInterval(temporizador); $("cargando").hidden = true; }
+
+    $("form-analisis").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      ocultarError($("error-analisis"));
+      const url = $("url").value.trim();
+      if (url.length < 3) { mostrarError($("error-analisis"), "Escribe la dirección de tu sitio web, por ejemplo tusitio.com"); return; }
+
+      $("btn-analizar").disabled = true;
+      $("btn-analizar").textContent = "Analizando…";
+      iniciarCarga();
+      try {
+        const resp = await llamar("/publico/auditoria", { url });
+        terminarCarga();
+        if (!resp.ok) { mostrarError($("error-analisis"), await leerError(resp)); return; }
+        mostrarVistaPrevia(await resp.json());
+      } catch {
+        terminarCarga();
+        mostrarError($("error-analisis"), "No pudimos conectar con el servicio. Revisa tu conexión e inténtalo otra vez.");
+      } finally {
+        $("btn-analizar").disabled = false;
+        $("btn-analizar").textContent = "Analizar mi sitio";
+      }
+    });
+
+    $("form-lead").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const err = $("error-lead");
+      ocultarError(err);
+      const nombre = $("nombre").value.trim();
+      const correo = $("correo").value.trim();
+      const telefono = $("telefono").value.trim();
+      if (nombre.length < 2) { mostrarError(err, "Escribe tu nombre."); return; }
+      if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(correo)) { mostrarError(err, "Escribe un correo válido."); return; }
+      if (telefono && !/^[0-9+()\-\s]{6,30}$/.test(telefono)) { mostrarError(err, "El teléfono solo puede tener números, espacios y los símbolos + ( ) -"); return; }
+      if (!$("consentimiento").checked) { mostrarError(err, "Debes aceptar el uso de tus datos para recibir el informe."); return; }
+
+      const btn = $("btn-lead");
+      btn.disabled = true;
+      btn.textContent = "Enviando…";
+      try {
+        const resp = await llamar("/publico/leads", {
+          auditoria_id: vista.auditoria_id, nombre, correo,
+          telefono: telefono || null, consentimiento: true, website: $("website").value,
+        });
+        if (!resp.ok) { mostrarError(err, await leerError(resp)); return; }
+        const datos = await resp.json();
+        if (datos.informe) mostrarInformeCompleto(datos.informe);
+        else mostrarError(err, "No se pudo cargar el informe. Vuelve a analizar tu sitio.");
+      } catch {
+        mostrarError(err, "No pudimos conectar con el servicio. Inténtalo otra vez.");
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Ver informe completo";
+      }
+    });
+
+    $("btn-otro").addEventListener("click", () => {
+      $("resultado").hidden = true;
+      $("url").value = "";
+      window.scrollTo({ top: 0, behavior: "smooth" });
+      $("url").focus();
+    });
+  </script>})();
+</body>
+</html>
