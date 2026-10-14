@@ -137,6 +137,8 @@ El sistema realiza únicamente **revisiones pasivas desde el exterior**: observa
 
 ## 6. Arquitectura
 
+<img width="1672" height="941" alt="image" src="https://github.com/user-attachments/assets/b2ae54a7-7f37-4143-be4d-a39a6b1b56af" />
+
 ```mermaid
 flowchart LR
     V["Visitante / prospecto"] -->|HTTPS| CF["Cloudflare Workers<br/>index · login · dashboard"]
