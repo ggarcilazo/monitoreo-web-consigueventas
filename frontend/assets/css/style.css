@@ -766,3 +766,62 @@ button.peligro:hover { background: #fb8f8f; box-shadow: none; }
 .toast.visible { opacity: 1; transform: translateY(0); }
 .toast.ok { border-color: rgba(103, 212, 193, 0.4); }
 .toast.error { border-color: rgba(248, 113, 113, 0.5); color: #fca5a5; }
+
+/* ---------- Sección Leads ---------- */
+.resumen-leads { margin-bottom: 1.5rem; }
+.badge.aviso { background: rgba(251, 191, 36, 0.12); color: #fbbf24; }
+.tabla-leads .badge { min-width: 0; }
+.tabla-leads td { white-space: nowrap; }
+
+.sel-estado {
+  height: 34px;
+  padding: 0 0.6rem;
+  border-radius: 8px;
+  border: 1px solid var(--border-fuerte);
+  background: var(--panel);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+.sel-estado:focus { outline: none; border-color: var(--accent); }
+
+a.btn-enlace {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.35rem 0.7rem;
+  border: 1px solid var(--border-fuerte);
+  border-radius: 10px;
+  color: var(--text);
+  font-size: 0.76rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+a.btn-enlace:hover { border-color: var(--accent); background: rgba(255, 255, 255, 0.05); }
+
+.dialogo.ancho { width: min(94vw, 720px); max-height: 90vh; overflow-y: auto; }
+.dialogo .campo select,
+.dialogo .campo textarea {
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-fuerte);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.9rem;
+}
+.dialogo .campo textarea { resize: vertical; min-height: 80px; }
+.dialogo .campo select:focus,
+.dialogo .campo textarea:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(103, 212, 193, 0.16); }
+
+.det-linea { margin-bottom: 0.3rem; word-break: break-word; }
+.det-sub { margin: 1.2rem 0 0.7rem; font-size: 0.78rem; letter-spacing: 0.07em; text-transform: uppercase; color: var(--text-tenue); }
+.det-cat { padding: 0.8rem 0; border-top: 1px solid var(--border); }
+.det-cat-cab { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; }
+.det-fallos { list-style: none; margin: 0.6rem 0 0; display: grid; gap: 0.5rem; }
+.det-fallos li { position: relative; padding-left: 1.2rem; font-size: 0.84rem; color: #fecaca; }
+.det-fallos li::before { content: "✕"; position: absolute; left: 0; color: var(--error); font-size: 0.75rem; }
+.det-fallos small { display: block; margin-top: 0.15rem; color: var(--text-dim); font-size: 0.78rem; }
+.det-nota { margin-top: 0.5rem; font-size: 0.84rem; color: var(--text-dim); }

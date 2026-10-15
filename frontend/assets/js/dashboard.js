@@ -403,6 +403,7 @@ document.querySelectorAll(".stat[data-estado]").forEach(s => s.addEventListener(
 const vistas = {
   panel: { titulo: "Panel", subtitulo: "Estado en tiempo real de los sitios monitoreados" },
   sitios: { titulo: "Sitios", subtitulo: "Administra los sitios que se monitorean" },
+  leads: { titulo: "Leads", subtitulo: "Contactos que dejaron sus datos en el diagnóstico gratuito" },
   incidentes: { titulo: "Incidentes", subtitulo: "Caídas detectadas y su duración" },
   usuarios: { titulo: "Usuarios", subtitulo: "Quién tiene acceso a este panel" },
 };
