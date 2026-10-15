@@ -1,7 +1,9 @@
 from datetime import datetime
-from typing import Optional
+from typing import Any, Literal, Optional
 
 from pydantic import BaseModel, Field
+
+EstadoLead = Literal["nuevo", "contactado", "en_proceso", "ganado", "descartado"]
 
 
 class LeadCrear(BaseModel):
@@ -23,6 +25,16 @@ class LeadRespuesta(BaseModel):
     estado: str
     notas: Optional[str] = None
     creado_en: datetime
+    actualizado_en: Optional[datetime] = None
 
     class Config:
         from_attributes = True
+
+
+class LeadDetalle(LeadRespuesta):
+    informe: Optional[Any] = None
+
+
+class LeadActualizar(BaseModel):
+    estado: Optional[EstadoLead] = None
+    notas: Optional[str] = Field(default=None, max_length=2000)

@@ -1,4 +1,5 @@
 from sqlalchemy import Boolean, Column, DateTime, Integer, String, Text
+from sqlalchemy.dialects.postgresql import JSONB
 from sqlalchemy.sql import func
 
 from app.database import Base
@@ -13,7 +14,9 @@ class Lead(Base):
     telefono = Column(String(30), nullable=True)
     url_analizada = Column(String(300), nullable=False)
     puntaje_global = Column(Integer, nullable=True)
+    informe = Column(JSONB, nullable=True)
     consentimiento = Column(Boolean, nullable=False, default=False)
     estado = Column(String(20), nullable=False, default="nuevo")
     notas = Column(Text, nullable=True)
     creado_en = Column(DateTime(timezone=True), server_default=func.now(), nullable=False)
+    actualizado_en = Column(DateTime(timezone=True), server_default=func.now(), onupdate=func.now(), nullable=True)

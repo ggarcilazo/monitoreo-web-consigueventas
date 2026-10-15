@@ -181,6 +181,7 @@ def registrar_lead(datos: LeadCrear, request: Request, db: Session = Depends(get
         telefono=(datos.telefono or "").strip() or None,
         url_analizada=informe["url"][:300],
         puntaje_global=informe["puntaje_global"],
+        informe=informe,
         consentimiento=True,
     )
     try:
