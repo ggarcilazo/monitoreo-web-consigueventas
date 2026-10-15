@@ -20,8 +20,8 @@ async function cargarSitios() {
     const resp = await apiFetch(`${API_BASE}/sitios/`);
     if (resp.status === 403) { mostrarSinAcceso(); return; }
     sitiosCache = await resp.json();
-    sitiosCache = sitiosCache.filter(s => !s.oculto);
-
+    sitiosCache = sitiosCache.filter(s => !s.oculto && s.activo !== false);
+    
     if (sitiosCache.length === 0) {
       contenedorSitios.innerHTML = `<div class="estado-vacio">Aún no hay sitios registrados.</div>`;
       actualizarResumen([]);

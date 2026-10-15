@@ -99,10 +99,30 @@
 
         <!-- ===== Vista: Sitios ===== -->
         <section class="vista" id="vista-sitios" hidden>
-          <div class="proximamente">
-            <h2>Gestión de sitios</h2>
-            <p>Aquí podrás agregar, pausar, ocultar y eliminar sitios sin usar la terminal.</p>
-            <span class="etiqueta-prox">Próximamente</span>
+          <div class="barra">
+            <div class="buscador">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="search" id="buscador-sitios" placeholder="Buscar por nombre o URL..." autocomplete="off">
+            </div>
+            <span class="ultimo-chequeo" id="resumen-sitios"></span>
+            <button type="button" id="btn-agregar-sitio" class="solo-admin">+ Agregar sitio</button>
+          </div>
+
+          <div class="tabla-caja">
+            <table class="tabla-sitios">
+              <thead>
+                <tr>
+                  <th>Cliente</th>
+                  <th>Monitoreo</th>
+                  <th>Visibilidad</th>
+                  <th>Registrado</th>
+                  <th class="solo-admin">Acciones</th>
+                </tr>
+              </thead>
+              <tbody id="tbody-sitios">
+                <tr><td colspan="5" class="estado-carga">Cargando sitios...</td></tr>
+              </tbody>
+            </table>
           </div>
         </section>
 
@@ -128,8 +148,40 @@
     </main>
   </div>
 
+    <dialog id="dlg-sitio" class="dialogo">
+    <form id="form-sitio" novalidate onsubmit="return false;">
+      <h3 id="dlg-sitio-titulo">Agregar sitio</h3>
+      <div class="campo">
+        <label for="sitio-nombre">Nombre del cliente</label>
+        <input type="text" id="sitio-nombre" maxlength="120" autocomplete="off">
+      </div>
+      <div class="campo">
+        <label for="sitio-url">Dirección del sitio</label>
+        <input type="text" id="sitio-url" placeholder="https://tusitio.com" autocomplete="off">
+      </div>
+      <label class="check"><input type="checkbox" id="sitio-oculto"><span>Ocultar en el panel (el sitio se sigue monitoreando y avisando por Telegram)</span></label>
+      <div class="msg-error" id="error-sitio" role="alert"></div>
+      <div class="dialogo-botones">
+        <button type="button" class="secondary" id="btn-cancelar-sitio">Cancelar</button>
+        <button type="submit" id="btn-guardar-sitio">Guardar</button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="dlg-eliminar" class="dialogo">
+    <h3>Eliminar sitio</h3>
+    <p id="dlg-eliminar-texto"></p>
+    <div class="dialogo-botones">
+      <button type="button" class="secondary" id="btn-cancelar-eliminar">Cancelar</button>
+      <button type="button" class="peligro" id="btn-confirmar-eliminar">Eliminar</button>
+    </div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
   <script src="assets/js/auth.js"></script>
   <script>if (!leerSesion()) window.location.href = "login.html";</script>
   <script src="assets/js/dashboard.js"></script>
+  <script src="assets/js/sitios.js"></script>
 </body>
 </html>

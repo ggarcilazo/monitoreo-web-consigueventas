@@ -676,3 +676,93 @@ body[data-rol="sinrol"] .rol-chip { background: var(--error-bg); color: var(--er
     .explica p + p { margin-top: .3rem; }
     .explica b { color: var(--texto); font-weight: 600; }
 
+/* ---------- Sección Sitios ---------- */
+body:not([data-rol="admin"]) .solo-admin { display: none !important; }
+
+.tabla-caja { border: 1px solid var(--border); border-radius: 14px; background: var(--card); overflow-x: auto; }
+.tabla-sitios { width: 100%; border-collapse: collapse; font-size: 0.86rem; }
+.tabla-sitios th {
+  padding: 0.85rem 1rem;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--border);
+  color: var(--text-tenue);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.tabla-sitios td { padding: 0.85rem 1rem; border-top: 1px solid var(--border); vertical-align: middle; }
+.tabla-sitios tbody tr:first-child td { border-top: none; }
+.tabla-sitios tbody tr:hover td { background: rgba(255, 255, 255, 0.02); }
+.tabla-sitios .sitio-url { max-width: 320px; }
+
+.acciones-fila { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.acciones-fila button { padding: 0.35rem 0.7rem; font-size: 0.76rem; }
+button.peligro-suave:hover { border-color: var(--error); color: var(--error); }
+button.peligro { background: var(--error); color: #2b0a0f; box-shadow: none; }
+button.peligro:hover { background: #fb8f8f; box-shadow: none; }
+
+.dialogo {
+  width: min(92vw, 440px);
+  padding: 1.5rem;
+  border: 1px solid var(--border-fuerte);
+  border-radius: 16px;
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.55);
+}
+.dialogo::backdrop { background: rgba(5, 8, 14, 0.7); backdrop-filter: blur(3px); }
+.dialogo h3 { margin-bottom: 0.9rem; font-size: 1.15rem; letter-spacing: -0.01em; }
+.dialogo p { color: var(--text-dim); font-size: 0.9rem; line-height: 1.5; }
+.dialogo p b { color: var(--text); }
+.dialogo .campo { margin-bottom: 0.9rem; }
+.dialogo .campo label { display: block; margin-bottom: 0.35rem; font-size: 0.8rem; font-weight: 600; color: #b4bfd1; }
+.dialogo .campo input[type="text"] {
+  width: 100%;
+  height: 44px;
+  padding: 0 0.9rem;
+  border-radius: 10px;
+  border: 1px solid var(--border-fuerte);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  font-size: 0.92rem;
+}
+.dialogo .campo input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(103, 212, 193, 0.16); }
+.dialogo .check { display: flex; gap: 0.55rem; align-items: flex-start; margin: 0.2rem 0 1rem; font-size: 0.84rem; color: var(--text-dim); }
+.dialogo .check input { margin-top: 3px; accent-color: var(--accent); }
+.dialogo-botones { display: flex; justify-content: flex-end; gap: 0.6rem; margin-top: 1.2rem; }
+
+.msg-error {
+  display: none;
+  margin-bottom: 0.8rem;
+  padding: 0.6rem 0.8rem;
+  border-radius: 9px;
+  font-size: 0.84rem;
+  background: var(--error-bg);
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  color: #fca5a5;
+}
+.msg-error.visible { display: block; }
+
+.toast {
+  position: fixed;
+  right: 1.25rem;
+  bottom: 1.25rem;
+  z-index: 50;
+  max-width: 340px;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--border-fuerte);
+  border-radius: 12px;
+  background: var(--card);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.45);
+  font-size: 0.86rem;
+  opacity: 0;
+  transform: translateY(8px);
+  pointer-events: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+}
+.toast.visible { opacity: 1; transform: translateY(0); }
+.toast.ok { border-color: rgba(103, 212, 193, 0.4); }
+.toast.error { border-color: rgba(248, 113, 113, 0.5); color: #fca5a5; }

@@ -31,7 +31,7 @@ def hubo_cambio_de_estado(db: Session, sitio_id: int, disponible_ahora: bool) ->
         .first()
     )
     if anterior is None:
-        return True
+        return not disponible_ahora
     return anterior.disponible != disponible_ahora
 
 
