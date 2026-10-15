@@ -1,0 +1,24 @@
+# Backend de monitoreo: equivalente al comando `docker run` que se usa en la VM.
+#
+# Uso (desde la carpeta infra/ del repositorio, en la VM):
+#   docker rm -f monitoreo-backend        # si existe un contenedor creado con `docker run`
+#   docker compose up -d --build
+#   docker compose logs --tail 20
+#
+# El archivo ../backend/.env debe existir en la VM (no se sube a GitHub).
+# Hay una plantilla con los nombres de las variables en ../backend/.env.example.
+
+services:
+  backend:
+    build: ../backend
+    image: monitoreo-backend
+    container_name: monitoreo-backend
+    restart: unless-stopped
+    env_file:
+      - ../backend/.env
+    environment:
+      ROOT_PATH: /api
+    ports:
+      - "127.0.0.1:8001:8000"
+    mem_limit: 200m
+    memswap_limit: 400m
