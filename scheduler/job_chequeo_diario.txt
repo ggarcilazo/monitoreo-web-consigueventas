@@ -1,0 +1,1 @@
+Obsoleto: el cron lo hace GitHub Actions.
