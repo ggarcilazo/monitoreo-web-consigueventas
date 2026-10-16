@@ -40,6 +40,7 @@ def _usuario_del_token(token: str) -> dict:
     usuario = {
         "email": (datos.get("email") or "").lower(),
         "rol": ((datos.get("app_metadata") or {}).get("rol") or "").lower(),
+        "id": datos.get("id") or "",
     }
     if len(_cache) > 200:
         _cache.clear()

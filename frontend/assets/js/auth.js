@@ -78,6 +78,7 @@ async function iniciarSesion(email, password) {
     const detalle = d.msg || d.error_description || d.message || "";
     if (codigo === "invalid_credentials") throw new Error("Correo o contraseña incorrectos");
     if (codigo === "email_not_confirmed") throw new Error("Este usuario aún no está confirmado en Supabase");
+    if (codigo === "user_banned") throw new Error("Tu cuenta está suspendida. Contacta al administrador.");
     throw new Error(`No se pudo ingresar (${r.status}): ${detalle || codigo || "error desconocido"}`);
   }
 
