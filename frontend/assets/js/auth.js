@@ -1,9 +1,42 @@
 const SUPABASE_URL = "https://fgdshcruqifmiwttwshn.supabase.co";
 const SUPABASE_KEY = "sb_publishable_0i6w0U9P5QGV83DoEh5ang_zOdRhyXv";
 const CLAVE_SESION = "mcv_sesion";
+const CLAVE_ACTIVIDAD = "mcv_actividad";
+const INACTIVIDAD_MS = 30 * 60 * 1000; // tiempo sin actividad antes de cerrar la sesión
+
+function sesionCruda() {
+  try { return JSON.parse(localStorage.getItem(CLAVE_SESION)); } catch { return null; }
+}
+
+function marcarActividad() {
+  try { localStorage.setItem(CLAVE_ACTIVIDAD, String(Date.now())); } catch {}
+}
+
+function inactiva() {
+  try {
+    const t = Number(localStorage.getItem(CLAVE_ACTIVIDAD));
+    if (!t) { marcarActividad(); return false; }
+    return Date.now() - t > INACTIVIDAD_MS;
+  } catch { return false; }
+}
+
+function revocar(s) {
+  if (!s || !s.access_token) return Promise.resolve();
+  return fetch(`${SUPABASE_URL}/auth/v1/logout?scope=local`, {
+    method: "POST",
+    headers: { apikey: SUPABASE_KEY, Authorization: `Bearer ${s.access_token}` },
+    keepalive: true,
+  }).catch(() => {});
+}
 
 function leerSesion() {
-  try { return JSON.parse(localStorage.getItem(CLAVE_SESION)); } catch { return null; }
+  const s = sesionCruda();
+  if (s && inactiva()) {
+    revocar(s);
+    localStorage.removeItem(CLAVE_SESION);
+    return null;
+  }
+  return s;
 }
 
 function guardarSesion(d) {
@@ -13,11 +46,16 @@ function guardarSesion(d) {
     expira: Date.now() + (d.expires_in - 60) * 1000,
     email: d.user?.email || "",
   }));
+  marcarActividad();
 }
 
-function cerrarSesion() {
+async function cerrarSesion(motivo) {
+  const razon = typeof motivo === "string" ? motivo : "";
+  const s = sesionCruda();
   localStorage.removeItem(CLAVE_SESION);
-  window.location.href = "login.html";
+  localStorage.removeItem(CLAVE_ACTIVIDAD);
+  if (s) await Promise.race([revocar(s), new Promise((r) => setTimeout(r, 1500))]);
+  window.location.replace("login.html" + (razon ? `?motivo=${razon}` : ""));
 }
 
 async function iniciarSesion(email, password) {
@@ -57,19 +95,47 @@ async function tokenValido() {
   });
   if (!r.ok) return null;
   guardarSesion(await r.json());
-  return leerSesion().access_token;
+  return sesionCruda().access_token;
 }
 
 async function apiFetch(url, opciones = {}) {
   const token = await tokenValido();
   if (!token) {
-    cerrarSesion();
+    cerrarSesion("expirada");
     throw new Error("Sesión expirada");
   }
   const resp = await fetch(url, {
     ...opciones,
     headers: { ...(opciones.headers || {}), Authorization: `Bearer ${token}` },
   });
-  if (resp.status === 401) cerrarSesion();
+  if (resp.status === 401) cerrarSesion("expirada");
   return resp;
 }
+
+// ---------- Vigilancia de inactividad y botón «Atrás» ----------
+(function vigilar() {
+  window.addEventListener("pageshow", (e) => {
+    if (e.persisted && !sesionCruda() && !location.pathname.includes("login")) {
+      window.location.replace("login.html");
+    }
+  });
+
+  if (!sesionCruda()) return;
+
+  let ultimo = 0;
+  const actividad = () => {
+    const ahora = Date.now();
+    if (ahora - ultimo > 15000) {
+      ultimo = ahora;
+      if (sesionCruda()) marcarActividad();
+    }
+  };
+  ["click", "keydown", "mousemove", "touchstart", "scroll"].forEach((ev) =>
+    document.addEventListener(ev, actividad, { passive: true, capture: true }));
+
+  const revisar = () => {
+    if (sesionCruda() && inactiva()) cerrarSesion("inactividad");
+  };
+  setInterval(revisar, 30000);
+  document.addEventListener("visibilitychange", () => { if (!document.hidden) revisar(); });
+})();

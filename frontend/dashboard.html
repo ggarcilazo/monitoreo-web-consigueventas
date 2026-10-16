@@ -162,11 +162,19 @@
               <option value="descartado">Descartado</option>
             </select>
             <span class="ultimo-chequeo" id="resumen-leads"></span>
-            <button type="button" class="secondary" id="btn-exportar-leads">Exportar CSV</button>
+            <button type="button" class="secondary" id="btn-exportar-leads">Exportar Excel</button>
           </div>
 
           <div class="tabla-caja">
             <table class="tabla-sitios tabla-leads">
+              <colgroup>
+                <col style="width: 12%">
+                <col style="width: 27%">
+                <col style="width: 20%">
+                <col style="width: 10%">
+                <col style="width: 15%">
+                <col style="width: 16%">
+              </colgroup>
               <thead>
                 <tr><th>Fecha</th><th>Contacto</th><th>Sitio analizado</th><th>Puntaje</th><th>Estado</th><th>Acciones</th></tr>
               </thead>
@@ -252,7 +260,7 @@
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script src="assets/js/auth.js"></script>
-  <script>if (!leerSesion()) window.location.href = "login.html";</script>
+  <script>if (!leerSesion()) window.location.replace("login.html");</script>
   <script src="assets/js/dashboard.js"></script>
   <script src="assets/js/sitios.js"></script>
   <script src="assets/js/leads.js"></script>

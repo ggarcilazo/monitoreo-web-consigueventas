@@ -825,3 +825,33 @@ a.btn-enlace:hover { border-color: var(--accent); background: rgba(255, 255, 255
 .det-fallos li::before { content: "✕"; position: absolute; left: 0; color: var(--error); font-size: 0.75rem; }
 .det-fallos small { display: block; margin-top: 0.15rem; color: var(--text-dim); font-size: 0.78rem; }
 .det-nota { margin-top: 0.5rem; font-size: 0.84rem; color: var(--text-dim); }
+
+/* ---------- Leads: tabla ajustada al espacio ---------- */
+.tabla-leads { table-layout: fixed; min-width: 760px; }
+.tabla-leads th, .tabla-leads td { padding: 0.8rem 0.75rem; white-space: normal; }
+.tabla-leads td { overflow: hidden; }
+.tabla-leads .sitio-nombre,
+.tabla-leads .sitio-url { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: none; }
+.tabla-leads .fecha-dia { font-weight: 600; }
+.tabla-leads .fecha-hora { margin-top: 0.1rem; color: var(--text-dim); font-size: 0.78rem; }
+.tabla-leads .sel-estado { width: 100%; max-width: 150px; }
+
+.iconos-fila { display: flex; justify-content: flex-end; gap: 0.35rem; }
+.btn-icono {
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border-fuerte);
+  border-radius: 9px;
+  background: transparent;
+  color: var(--text-dim);
+  box-shadow: none;
+  cursor: pointer;
+  text-decoration: none;
+  transition: border-color 0.15s ease, color 0.15s ease, background 0.15s ease;
+}
+.btn-icono:hover { border-color: var(--accent); color: var(--accent); background: rgba(255, 255, 255, 0.04); box-shadow: none; }
+.btn-icono.peligro-suave:hover { border-color: var(--error); color: var(--error); }

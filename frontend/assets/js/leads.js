@@ -68,24 +68,37 @@
       : "—";
   }
 
+  const svg = (contenido) =>
+    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${contenido}</svg>`;
+  const ICONOS = {
+    ver: svg('<path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7S1 12 1 12z"/><circle cx="12" cy="12" r="3"/>'),
+    whatsapp: svg('<path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20.5l1.7-5.4A8.4 8.4 0 1 1 21 11.5z"/>'),
+    correo: svg('<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M22 7l-10 7L2 7"/>'),
+    borrar: svg('<polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/>'),
+  };
+
   function fila(l) {
     const wa = enlaceWhatsapp(l);
     const p = l.puntaje_global;
+    const f = new Date(l.creado_en);
+    const dia = f.toLocaleDateString("es-PE", { day: "2-digit", month: "2-digit", year: "numeric" });
+    const hora = f.toLocaleTimeString("es-PE", { hour: "2-digit", minute: "2-digit" });
     return `<tr data-id="${l.id}">
-      <td>${fechaHora(l.creado_en)}</td>
+      <td><div class="fecha-dia">${dia}</div><div class="fecha-hora">${hora}</div></td>
       <td>
-        <div class="sitio-nombre">${esc(l.nombre)}</div>
-        <div class="sitio-url">${esc(l.correo)}${l.telefono ? " · " + esc(l.telefono) : ""}</div>
+        <div class="sitio-nombre" title="${esc(l.nombre)}">${esc(l.nombre)}</div>
+        <div class="sitio-url" title="${esc(l.correo)}">${esc(l.correo)}</div>
+        ${l.telefono ? `<div class="sitio-url">${esc(l.telefono)}</div>` : ""}
       </td>
-      <td><div class="sitio-url">${esc(l.url_analizada)}</div></td>
+      <td><div class="sitio-url" title="${esc(l.url_analizada)}">${esc(l.url_analizada)}</div></td>
       <td>${p === null || p === undefined ? "—" : `<span class="badge ${claseNota(p)}">${p}/100</span>`}</td>
       <td><select class="sel-estado" aria-label="Estado">${opciones(l.estado)}</select></td>
       <td>
-        <div class="acciones-fila">
-          <button type="button" class="secondary" data-accion="ver">Ver detalle</button>
-          ${wa ? `<a class="btn-enlace" href="${esc(wa)}" target="_blank" rel="noopener noreferrer">WhatsApp</a>` : ""}
-          <a class="btn-enlace" href="${esc(enlaceCorreo(l))}">Correo</a>
-          <button type="button" class="secondary peligro-suave" data-accion="eliminar">Eliminar</button>
+        <div class="iconos-fila">
+          <button type="button" class="btn-icono" data-accion="ver" title="Ver detalle" aria-label="Ver detalle">${ICONOS.ver}</button>
+          ${wa ? `<a class="btn-icono" href="${esc(wa)}" target="_blank" rel="noopener noreferrer" title="Escribir por WhatsApp" aria-label="Escribir por WhatsApp">${ICONOS.whatsapp}</a>` : ""}
+          <a class="btn-icono" href="${esc(enlaceCorreo(l))}" title="Enviar correo" aria-label="Enviar correo">${ICONOS.correo}</a>
+          <button type="button" class="btn-icono peligro-suave" data-accion="eliminar" title="Eliminar" aria-label="Eliminar">${ICONOS.borrar}</button>
         </div>
       </td>
     </tr>`;
@@ -249,36 +262,201 @@
   });
 
   // ---------- Exportar CSV ----------
-  function celda(valor, proteger = true) {
-    let s = String(valor ?? "");
-    if (proteger && /^[=+\-@\t\r]/.test(s)) s = "'" + s; // evita fórmulas al abrir en Excel
-    return /[",\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+    // ---------- Exportar a Excel ----------
+  const COLORES_ESTADO = {
+    nuevo: ["FFDBEAFE", "FF1E40AF"],
+    contactado: ["FFFEF3C7", "FF92400E"],
+    en_proceso: ["FFEDE9FE", "FF5B21B6"],
+    ganado: ["FFD1FAE5", "FF065F46"],
+    descartado: ["FFE5E7EB", "FF374151"],
+  };
+  function coloresPuntaje(p) {
+    if (p >= 80) return ["FFD1FAE5", "FF065F46"];
+    if (p >= 50) return ["FFFEF3C7", "FF92400E"];
+    return ["FFFEE2E2", "FF991B1B"];
   }
+  const relleno = (argb) => ({ type: "pattern", pattern: "solid", fgColor: { argb } });
+  const bordeFino = { style: "thin", color: { argb: "FFD1D5DB" } };
+  const bordes = { top: bordeFino, left: bordeFino, bottom: bordeFino, right: bordeFino };
+  // Excel no guarda zona horaria: se desplaza la fecha para que muestre la hora local.
+  const comoLocal = (iso) => { const d = new Date(iso); return new Date(d.getTime() - d.getTimezoneOffset() * 60000); };
+  const hoyTexto = () => new Date().toISOString().slice(0, 10);
 
-  function exportar() {
-    const filas = visibles();
-    if (!filas.length) { aviso("No hay contactos para exportar", "error"); return; }
-    const cabecera = ["Fecha", "Nombre", "Correo", "Teléfono", "Sitio", "Puntaje", "Estado", "Notas"];
-    const lineas = [cabecera.join(",")].concat(filas.map((l) => [
-      celda(fechaHora(l.creado_en)),
-      celda(l.nombre),
-      celda(l.correo),
-      celda(l.telefono, false),
-      celda(l.url_analizada),
-      celda(l.puntaje_global),
-      celda(ESTADOS[l.estado] || l.estado),
-      celda(l.notas),
-    ].join(",")));
-    const blob = new Blob(["\ufeff" + lineas.join("\r\n")], { type: "text/csv;charset=utf-8" });
+  function descargar(blob, nombre) {
     const enlace = document.createElement("a");
     enlace.href = URL.createObjectURL(blob);
-    enlace.download = `leads-${new Date().toISOString().slice(0, 10)}.csv`;
+    enlace.download = nombre;
     document.body.appendChild(enlace);
     enlace.click();
     enlace.remove();
     setTimeout(() => URL.revokeObjectURL(enlace.href), 1000);
   }
-  $("btn-exportar-leads").addEventListener("click", exportar);
+
+  function cargarExcelJS() {
+    if (window.ExcelJS) return Promise.resolve();
+    return new Promise((resolver, rechazar) => {
+      const s = document.createElement("script");
+      s.src = "https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js";
+      s.onload = resolver;
+      s.onerror = () => rechazar(new Error("No se pudo cargar el generador de Excel"));
+      document.head.appendChild(s);
+    });
+  }
+
+  // Respaldo: CSV con separador explícito para que Excel lo abra en columnas.
+  const dos = (n) => String(n).padStart(2, "0");
+  function fechaCSV(iso) {
+    const d = new Date(iso);
+    return `${dos(d.getDate())}/${dos(d.getMonth() + 1)}/${d.getFullYear()} ${dos(d.getHours())}:${dos(d.getMinutes())}`;
+  }
+  function celdaCSV(valor, proteger = true) {
+    let s = String(valor ?? "");
+    if (proteger && /^[=+\-@\t\r]/.test(s)) s = "'" + s;
+    return /[";\n\r]/.test(s) ? `"${s.replace(/"/g, '""')}"` : s;
+  }
+  function exportarCSV(filas) {
+    const cab = ["N.°", "Fecha de registro", "Nombre", "Correo", "Teléfono", "Sitio analizado", "Puntaje", "Estado", "Notas de seguimiento"];
+    const lineas = ["sep=;", cab.join(";")].concat(filas.map((l, i) => [
+      i + 1, fechaCSV(l.creado_en), l.nombre, l.correo, l.telefono, l.url_analizada,
+      l.puntaje_global, ESTADOS[l.estado] || l.estado, l.notas,
+    ].map((v, k) => celdaCSV(v, k !== 4)).join(";")));
+    descargar(new Blob(["\ufeff" + lineas.join("\r\n")], { type: "text/csv;charset=utf-8" }),
+      `leads-consigueventas-${hoyTexto()}.csv`);
+  }
+
+  async function exportarExcel() {
+    const filas = visibles();
+    if (!filas.length) { aviso("No hay contactos para exportar", "error"); return; }
+    const boton = $("btn-exportar-leads");
+    boton.disabled = true;
+    boton.textContent = "Generando...";
+    try {
+      await cargarExcelJS();
+      const wb = new ExcelJS.Workbook();
+      wb.creator = "Monitor ConsigueVentas";
+      wb.created = new Date();
+
+      // ----- Hoja 1: Resumen -----
+      const res = wb.addWorksheet("Resumen", { views: [{ showGridLines: false }] });
+      res.columns = [{ width: 28 }, { width: 24 }];
+      res.mergeCells("A1:B1");
+      const titulo = res.getCell("A1");
+      titulo.value = "Reporte de leads · ConsigueVentas";
+      titulo.font = { size: 16, bold: true, color: { argb: "FF0F766E" } };
+      res.getRow(1).height = 28;
+
+      const est = $("filtro-estado-leads").value;
+      const q = $("buscador-leads").value.trim();
+      const conPuntaje = filas.filter((l) => l.puntaje_global != null);
+      const promedio = conPuntaje.length
+        ? Math.round(conPuntaje.reduce((a, l) => a + l.puntaje_global, 0) / conPuntaje.length)
+        : "—";
+      const datos = [
+        ["Generado el", new Date().toLocaleString("es-PE", { dateStyle: "long", timeStyle: "short" })],
+        ["Filtro de estado", est === "todos" ? "Todos" : ESTADOS[est]],
+        ["Búsqueda", q || "—"],
+        ["Contactos incluidos", filas.length],
+        ["Puntaje promedio", promedio],
+      ];
+      datos.forEach(([clave, valor], i) => {
+        const r = res.getRow(3 + i);
+        r.getCell(1).value = clave;
+        r.getCell(1).font = { bold: true, color: { argb: "FF374151" } };
+        r.getCell(2).value = valor;
+        r.getCell(2).alignment = { horizontal: "left" };
+      });
+
+      const filaCab = 3 + datos.length + 1;
+      ["Estado", "Contactos"].forEach((texto, i) => {
+        const c = res.getRow(filaCab).getCell(i + 1);
+        c.value = texto;
+        c.font = { bold: true, color: { argb: "FFFFFFFF" } };
+        c.fill = relleno("FF0F766E");
+        c.alignment = { horizontal: i ? "center" : "left" };
+      });
+      Object.entries(ESTADOS).forEach(([clave, texto], i) => {
+        const r = res.getRow(filaCab + 1 + i);
+        const [bg, fg] = COLORES_ESTADO[clave];
+        r.getCell(1).value = texto;
+        r.getCell(1).fill = relleno(bg);
+        r.getCell(1).font = { bold: true, color: { argb: fg } };
+        r.getCell(1).border = bordes;
+        r.getCell(2).value = filas.filter((l) => l.estado === clave).length;
+        r.getCell(2).alignment = { horizontal: "center" };
+        r.getCell(2).border = bordes;
+      });
+
+      // ----- Hoja 2: Contactos -----
+      const hoja = wb.addWorksheet("Contactos", { views: [{ state: "frozen", ySplit: 1 }] });
+      hoja.columns = [
+        { header: "N.°", key: "n", width: 6 },
+        { header: "Fecha de registro", key: "fecha", width: 20 },
+        { header: "Nombre", key: "nombre", width: 26 },
+        { header: "Correo", key: "correo", width: 32 },
+        { header: "Teléfono / WhatsApp", key: "telefono", width: 20 },
+        { header: "Sitio analizado", key: "sitio", width: 34 },
+        { header: "Puntaje", key: "puntaje", width: 10 },
+        { header: "Estado", key: "estado", width: 16 },
+        { header: "Notas de seguimiento", key: "notas", width: 44 },
+      ];
+      const cab = hoja.getRow(1);
+      cab.height = 26;
+      cab.eachCell((c) => {
+        c.font = { bold: true, color: { argb: "FFFFFFFF" } };
+        c.fill = relleno("FF0F766E");
+        c.alignment = { vertical: "middle", horizontal: "center", wrapText: true };
+        c.border = bordes;
+      });
+
+      filas.forEach((l, i) => {
+        const r = hoja.addRow({
+          n: i + 1,
+          fecha: comoLocal(l.creado_en),
+          nombre: l.nombre,
+          correo: l.correo,
+          telefono: l.telefono || "",
+          sitio: l.url_analizada,
+          puntaje: l.puntaje_global ?? "",
+          estado: ESTADOS[l.estado] || l.estado,
+          notas: l.notas || "",
+        });
+        r.eachCell({ includeEmpty: true }, (c) => {
+          c.border = bordes;
+          c.alignment = { vertical: "middle", wrapText: true };
+        });
+        r.getCell("fecha").numFmt = "dd/mm/yyyy hh:mm";
+        r.getCell("telefono").numFmt = "@";
+        ["n", "puntaje", "estado"].forEach((k) => {
+          r.getCell(k).alignment = { vertical: "middle", horizontal: "center" };
+        });
+        if (l.puntaje_global != null) {
+          const [bg, fg] = coloresPuntaje(l.puntaje_global);
+          r.getCell("puntaje").fill = relleno(bg);
+          r.getCell("puntaje").font = { bold: true, color: { argb: fg } };
+        }
+        const [bgE, fgE] = COLORES_ESTADO[l.estado] || COLORES_ESTADO.descartado;
+        r.getCell("estado").fill = relleno(bgE);
+        r.getCell("estado").font = { bold: true, color: { argb: fgE } };
+      });
+
+      hoja.autoFilter = { from: { row: 1, column: 1 }, to: { row: 1, column: hoja.columns.length } };
+      hoja.pageSetup = { orientation: "landscape", fitToPage: true, fitToWidth: 1, fitToHeight: 0 };
+
+      const buffer = await wb.xlsx.writeBuffer();
+      descargar(
+        new Blob([buffer], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }),
+        `leads-consigueventas-${hoyTexto()}.xlsx`,
+      );
+      aviso("Archivo de Excel generado");
+    } catch {
+      exportarCSV(filas);
+      aviso("No se pudo generar el Excel; se descargó un CSV", "error");
+    } finally {
+      boton.disabled = false;
+      boton.textContent = "Exportar Excel";
+    }
+  }
+  $("btn-exportar-leads").addEventListener("click", exportarExcel);
 
   $("buscador-leads").addEventListener("input", pintar);
   $("filtro-estado-leads").addEventListener("change", pintar);

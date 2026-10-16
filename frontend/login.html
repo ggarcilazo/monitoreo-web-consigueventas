@@ -285,6 +285,10 @@
       cajaError.classList.add("visible");
     }
 
+    const motivo = new URLSearchParams(location.search).get("motivo");
+    if (motivo === "inactividad") mostrarError("Tu sesión se cerró por inactividad. Ingresa de nuevo.");
+    if (motivo === "expirada") mostrarError("Tu sesión expiró. Ingresa de nuevo.");
+
     document.getElementById("form-login").addEventListener("submit", async (e) => {
       e.preventDefault();
       cajaError.classList.remove("visible");
