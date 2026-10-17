@@ -855,3 +855,45 @@ a.btn-enlace:hover { border-color: var(--accent); background: rgba(255, 255, 255
 }
 .btn-icono:hover { border-color: var(--accent); color: var(--accent); background: rgba(255, 255, 255, 0.04); box-shadow: none; }
 .btn-icono.peligro-suave:hover { border-color: var(--error); color: var(--error); }
+
+/* ---------- Sección Usuarios ---------- */
+.tabla-usuarios { table-layout: fixed; min-width: 760px; }
+.tabla-usuarios th, .tabla-usuarios td { padding: 0.8rem 0.75rem; white-space: normal; }
+.tabla-usuarios td { overflow: hidden; }
+.tabla-usuarios .sitio-nombre { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.tabla-usuarios .sel-estado { width: 100%; max-width: 170px; }
+.tabla-usuarios .badge { min-width: 0; }
+
+.tag-yo {
+  margin-left: 0.4rem;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: var(--ok-bg);
+  color: var(--accent);
+  font-size: 0.7rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.aviso-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--border);
+  border-left: 3px solid var(--accent);
+  border-radius: 12px;
+  background: var(--card);
+  color: var(--text-dim);
+  font-size: 0.86rem;
+}
+.aviso-info strong { display: block; margin-bottom: 0.4rem; color: var(--text); }
+.aviso-info ol { margin-left: 1.1rem; display: grid; gap: 0.25rem; line-height: 1.5; }
+.aviso-info b, .aviso-info em { color: var(--text); font-style: normal; }
+.aviso-info a.btn-enlace { white-space: nowrap; }
+
+@media (max-width: 720px) {
+  .aviso-info { flex-direction: column; }
+}
