@@ -131,12 +131,56 @@
         </section>
 
         <!-- ===== Vista: Incidentes ===== -->
-        <section class="vista" id="vista-incidentes" hidden>
-          <div class="proximamente">
-            <h2>Registro de incidentes</h2>
-            <p>Aquí verás cuándo cayó cada sitio, cuánto duró la caída y cuándo se recuperó.</p>
-            <span class="etiqueta-prox">Próximamente</span>
+                <section class="vista" id="vista-incidentes" hidden>
+          <div class="resumen resumen-leads">
+            <div class="stat"><div class="valor" id="inc-total">—</div><div class="etiqueta">Incidentes en el periodo</div></div>
+            <div class="stat stat-error"><div class="valor" id="inc-abiertos">—</div><div class="etiqueta">Abiertos ahora</div></div>
+            <div class="stat stat-ok"><div class="valor" id="inc-promedio">—</div><div class="etiqueta">Recuperación promedio</div></div>
+            <div class="stat"><div class="valor valor-texto" id="inc-top">—</div><div class="etiqueta">Sitio con más caídas</div></div>
           </div>
+
+          <div class="barra">
+            <select id="inc-periodo" aria-label="Periodo">
+              <option value="7">Últimos 7 días</option>
+              <option value="30" selected>Últimos 30 días</option>
+              <option value="90">Últimos 90 días</option>
+            </select>
+            <select id="inc-sitio" aria-label="Sitio">
+              <option value="">Todos los sitios</option>
+            </select>
+            <select id="inc-estado" aria-label="Estado">
+              <option value="todos">Todos los estados</option>
+              <option value="abiertos">Abiertos</option>
+              <option value="resueltos">Resueltos</option>
+            </select>
+            <span class="ultimo-chequeo" id="resumen-incidentes"></span>
+          </div>
+
+          <div class="tabla-caja">
+            <table class="tabla-sitios tabla-incidentes">
+              <colgroup>
+                <col style="width: 25%">
+                <col style="width: 14%">
+                <col style="width: 14%">
+                <col style="width: 13%">
+                <col style="width: 12%">
+                <col style="width: 9%">
+                <col style="width: 13%">
+              </colgroup>
+              <thead>
+                <tr><th>Sitio</th><th>Inicio</th><th>Fin</th><th>Duración</th><th>Código</th><th>Fallidos</th><th>Estado</th></tr>
+              </thead>
+              <tbody id="tbody-incidentes">
+                <tr><td colspan="7" class="estado-carga">Cargando incidentes...</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p class="nota-precision">
+            La duración es aproximada: se mide desde el primer chequeo fallido hasta el primer chequeo correcto que le sigue,
+            así que su precisión depende de cada cuánto se revisan los sitios. Si pausas un sitio mientras está caído,
+            el incidente queda abierto hasta que lo reanudes.
+          </p>
         </section>
 
                 <!-- ===== Vista: Leads ===== -->
@@ -315,5 +359,6 @@
   <script src="assets/js/sitios.js"></script>
   <script src="assets/js/leads.js"></script>
   <script src="assets/js/usuarios.js"></script>
+  <script src="assets/js/incidentes.js"></script>
 </body>
 </html>

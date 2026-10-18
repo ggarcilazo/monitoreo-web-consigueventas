@@ -897,3 +897,26 @@ a.btn-enlace:hover { border-color: var(--accent); background: rgba(255, 255, 255
 @media (max-width: 720px) {
   .aviso-info { flex-direction: column; }
 }
+
+
+/* ---------- Sección Incidentes ---------- */
+.tabla-incidentes { table-layout: fixed; min-width: 820px; }
+.tabla-incidentes th, .tabla-incidentes td { padding: 0.8rem 0.75rem; white-space: normal; }
+.tabla-incidentes td { overflow: hidden; }
+.tabla-incidentes .sitio-nombre,
+.tabla-incidentes .sitio-url { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: none; }
+.tabla-incidentes .fecha-dia { font-weight: 600; }
+.tabla-incidentes .fecha-hora { margin-top: 0.1rem; color: var(--text-dim); font-size: 0.78rem; }
+.tabla-incidentes .badge { min-width: 0; }
+.tabla-incidentes tbody tr.fila-abierta td:first-child { box-shadow: inset 3px 0 0 var(--error); }
+
+.stat .valor.valor-texto {
+  font-size: 1.2rem;
+  line-height: 1.3;
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nota-precision { margin-top: 0.9rem; color: var(--text-tenue); font-size: 0.8rem; line-height: 1.5; }
