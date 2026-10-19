@@ -10,7 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from app.config import settings
 from app.database import Base
-from app.models import sitio, chequeo, lead  # noqa: F401 — importa todos tus modelos aquí
+from app.models import sitio, chequeo, lead, actividad  # noqa: F401 — importa todos tus modelos aquí
 
 config = context.config
 config.set_main_option("sqlalchemy.url", settings.database_url.replace("%", "%%"))

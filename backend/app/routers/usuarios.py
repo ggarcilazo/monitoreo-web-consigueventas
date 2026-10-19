@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session
 
 from app.auth import requerir_admin
 from app.database import get_db
+from app.services.actividad import registrar
 
 router = APIRouter(prefix="/usuarios", tags=["Usuarios"], dependencies=[Depends(requerir_admin)])
 
@@ -106,6 +107,21 @@ def actualizar_usuario(
     except Exception:
         db.rollback()
         raise HTTPException(status_code=500, detail="No se pudo actualizar el usuario.")
-
+    
     fila = db.execute(text(_SELECT + " AND id = CAST(:id AS uuid)"), {"id": uid}).first()
-    return _a_respuesta(fila, yo.get("id", ""))
+    respuesta = _a_respuesta(fila, yo.get("id", ""))
+
+    piezas = []
+    if cambios.get("quitar_rol"):
+        piezas.append("le quitó el acceso (sin rol)")
+    elif cambios.get("rol"):
+        piezas.append("le asignó el rol " + ("Administrador" if cambios["rol"] == "admin" else "Lector"))
+    if cambios.get("suspendido") is True:
+        piezas.append("suspendió la cuenta")
+    elif cambios.get("suspendido") is False:
+        piezas.append("reactivó la cuenta")
+    if piezas:
+        registrar(db, yo, "usuario_modificado", "usuario", uid,
+                  f"Cuenta {respuesta.email}: " + ", ".join(piezas) + ".",
+                  {"campos": list(cambios.keys())})
+    return respuesta

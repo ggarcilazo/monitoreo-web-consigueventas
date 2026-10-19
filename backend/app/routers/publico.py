@@ -16,6 +16,7 @@ from app.models.lead import Lead
 from app.schemas.lead_schema import LeadCrear
 from app.services.auditoria_publica import UrlNoPermitida, auditar_url
 from app.services.telegram_bot import enviar_alerta
+from app.services.actividad import registrar
 
 router = APIRouter(prefix="/publico", tags=["Público"])
 
@@ -191,6 +192,8 @@ def registrar_lead(datos: LeadCrear, request: Request, db: Session = Depends(get
     except Exception:
         db.rollback()
         raise HTTPException(status_code=500, detail="No se pudo guardar tu solicitud. Inténtalo de nuevo.")
-
+    
     _avisar_lead(lead)
+    registrar(db, {"email": "visitante (público)"}, "lead_nuevo", "lead", lead.id,
+              f"Nuevo contacto desde el diagnóstico público (lead #{lead.id}, puntaje {lead.puntaje_global}/100).")
     return {"ok": True, "informe": informe}
