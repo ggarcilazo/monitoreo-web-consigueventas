@@ -406,6 +406,7 @@ const vistas = {
   leads: { titulo: "Leads", subtitulo: "Contactos que dejaron sus datos en el diagnóstico gratuito" },
   incidentes: { titulo: "Incidentes", subtitulo: "Caídas detectadas y su duración" },
   usuarios: { titulo: "Usuarios", subtitulo: "Quién tiene acceso a este panel" },
+  actividad: { titulo: "Actividad", subtitulo: "Registro de quién hizo qué en el sistema" },
 };
 
 function irA(vista) {

@@ -42,6 +42,10 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
           Usuarios
         </a>
+        <a href="#actividad" data-vista="actividad" class="solo-admin">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          Actividad
+        </a>
       </nav>
 
       <div class="side-pie">
@@ -278,6 +282,38 @@
           </div>
         </section>
 
+                <!-- ===== Vista: Actividad ===== -->
+        <section class="vista" id="vista-actividad" hidden>
+          <div class="resumen resumen-leads">
+            <div class="stat"><div class="valor" id="act-total">—</div><div class="etiqueta">Eventos en el periodo</div></div>
+            <div class="stat stat-ok"><div class="valor" id="act-personas">—</div><div class="etiqueta">Personas activas</div></div>
+            <div class="stat"><div class="valor valor-texto" id="act-ultimo">—</div><div class="etiqueta">Último evento</div></div>
+          </div>
+
+          <div class="barra">
+            <div class="buscador">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+              <input type="search" id="buscador-actividad" placeholder="Buscar por texto o correo..." autocomplete="off">
+            </div>
+            <select id="act-periodo" aria-label="Periodo">
+              <option value="7">Últimos 7 días</option>
+              <option value="30" selected>Últimos 30 días</option>
+              <option value="90">Últimos 90 días</option>
+            </select>
+            <select id="act-tipo" aria-label="Tipo de evento">
+              <option value="">Todos los tipos</option>
+              <option value="sitio">Sitios</option>
+              <option value="lead">Leads</option>
+              <option value="usuario">Usuarios</option>
+            </select>
+            <span class="ultimo-chequeo" id="resumen-actividad"></span>
+          </div>
+
+          <div class="linea-tiempo" id="linea-actividad">
+            <div class="estado-carga">Cargando actividad...</div>
+          </div>
+        </section>
+
       </div>
     </main>
   </div>
@@ -360,5 +396,6 @@
   <script src="assets/js/leads.js"></script>
   <script src="assets/js/usuarios.js"></script>
   <script src="assets/js/incidentes.js"></script>
+  <script src="assets/js/actividad.js"></script>
 </body>
 </html>
