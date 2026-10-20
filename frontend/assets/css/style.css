@@ -956,3 +956,56 @@ a.btn-enlace:hover { border-color: var(--accent); background: rgba(255, 255, 255
 .evento-cuerpo { min-width: 0; flex: 1; }
 .evento-texto { font-size: 0.9rem; line-height: 1.4; word-break: break-word; }
 .evento-meta { margin-top: 0.15rem; color: var(--text-dim); font-size: 0.78rem; }
+
+/* ---------- Sección Ajustes ---------- */
+[hidden] { display: none !important; }
+
+.ajustes-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 1rem; align-items: start; }
+.ajuste-caja { padding: 1.25rem 1.4rem; border: 1px solid var(--border); border-radius: 14px; background: var(--card); }
+.ajuste-cab { display: flex; justify-content: space-between; align-items: flex-start; gap: 1rem; margin-bottom: 0.9rem; }
+.ajuste-cab h3 { margin-bottom: 0.2rem; font-size: 1rem; }
+.ajuste-cab p { color: var(--text-dim); font-size: 0.84rem; line-height: 1.45; }
+.ajuste-estado { font-size: 0.88rem; font-weight: 600; }
+.ajuste-nota { margin-top: 0.4rem; color: var(--text-tenue); font-size: 0.78rem; }
+
+.campo-linea { display: flex; align-items: center; flex-wrap: wrap; gap: 0.6rem; margin-bottom: 1rem; color: var(--text-dim); font-size: 0.86rem; }
+.campo-linea input[type="number"] {
+  width: 76px;
+  height: 38px;
+  padding: 0 0.6rem;
+  border-radius: 9px;
+  border: 1px solid var(--border-fuerte);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  text-align: center;
+}
+.campo-linea input:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px rgba(103, 212, 193, 0.16); }
+
+.datos-sistema { display: grid; gap: 0.7rem; }
+.datos-sistema > div { display: flex; justify-content: space-between; gap: 1rem; padding-bottom: 0.6rem; border-bottom: 1px solid var(--border); font-size: 0.86rem; }
+.datos-sistema > div:last-child { padding-bottom: 0; border-bottom: none; }
+.datos-sistema dt { color: var(--text-dim); }
+.datos-sistema dd { text-align: right; }
+.datos-sistema code { font-size: 0.8rem; color: var(--accent); }
+
+.interruptor { position: relative; flex: 0 0 auto; display: inline-block; width: 48px; height: 28px; cursor: pointer; }
+.interruptor input { position: absolute; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.interruptor .pista { position: absolute; inset: 0; border-radius: 999px; background: rgba(255, 255, 255, 0.14); transition: background 0.2s ease; }
+.interruptor .pista::after {
+  content: "";
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: #fff;
+  transition: transform 0.2s ease;
+}
+.interruptor input:checked + .pista { background: var(--accent); }
+.interruptor input:checked + .pista::after { transform: translateX(20px); }
+.interruptor input:focus-visible + .pista { box-shadow: 0 0 0 3px rgba(103, 212, 193, 0.3); }
+.interruptor input:disabled { cursor: wait; }
+
+.evento-icono.ev-ajustes { background: rgba(148, 163, 184, 0.15); color: #cbd5e1; }

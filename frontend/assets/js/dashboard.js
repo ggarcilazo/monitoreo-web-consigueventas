@@ -407,6 +407,7 @@ const vistas = {
   incidentes: { titulo: "Incidentes", subtitulo: "Caídas detectadas y su duración" },
   usuarios: { titulo: "Usuarios", subtitulo: "Quién tiene acceso a este panel" },
   actividad: { titulo: "Actividad", subtitulo: "Registro de quién hizo qué en el sistema" },
+  ajustes: { titulo: "Ajustes", subtitulo: "Alertas, diagnóstico público e información del sistema" },
 };
 
 function irA(vista) {

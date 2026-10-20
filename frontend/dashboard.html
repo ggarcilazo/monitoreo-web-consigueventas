@@ -46,6 +46,10 @@
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
           Actividad
         </a>
+        <a href="#ajustes" data-vista="ajustes" class="solo-admin">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+          Ajustes
+        </a>
       </nav>
 
       <div class="side-pie">
@@ -305,12 +309,67 @@
               <option value="sitio">Sitios</option>
               <option value="lead">Leads</option>
               <option value="usuario">Usuarios</option>
+              <option value="ajustes">Ajustes</option>
             </select>
             <span class="ultimo-chequeo" id="resumen-actividad"></span>
           </div>
 
           <div class="linea-tiempo" id="linea-actividad">
             <div class="estado-carga">Cargando actividad...</div>
+          </div>
+        </section>
+
+                <!-- ===== Vista: Ajustes ===== -->
+        <section class="vista" id="vista-ajustes" hidden>
+          <div class="estado-vacio" id="aj-bloqueo" hidden>Solo los administradores pueden ver los ajustes.</div>
+
+          <div class="ajustes-grid" id="ajustes-grid">
+            <article class="ajuste-caja">
+              <div class="ajuste-cab">
+                <div>
+                  <h3>Diagnóstico público</h3>
+                  <p>Página de análisis gratuito para posibles clientes.</p>
+                </div>
+                <label class="interruptor" title="Encender o apagar el diagnóstico público">
+                  <input type="checkbox" id="aj-diagnostico" aria-label="Diagnóstico público">
+                  <span class="pista"></span>
+                </label>
+              </div>
+              <p class="ajuste-estado" id="aj-diagnostico-estado">—</p>
+              <p class="ajuste-nota" id="aj-origen"></p>
+            </article>
+
+            <article class="ajuste-caja">
+              <div class="ajuste-cab">
+                <div>
+                  <h3>Alertas por Telegram</h3>
+                  <p>Avisos de caídas, recuperaciones y certificados por vencer.</p>
+                </div>
+                <span class="badge" id="aj-telegram">—</span>
+              </div>
+              <div class="campo-linea">
+                <label for="aj-ssl">Avisar cuando el certificado SSL venza en</label>
+                <input type="number" id="aj-ssl" min="1" max="60" step="1">
+                <span>días o menos</span>
+                <button type="button" class="secondary" id="btn-guardar-ssl">Guardar</button>
+              </div>
+              <button type="button" class="secondary" id="btn-probar-telegram">Enviar mensaje de prueba</button>
+            </article>
+
+            <article class="ajuste-caja">
+              <div class="ajuste-cab">
+                <div>
+                  <h3>Sistema</h3>
+                  <p>Información de solo lectura.</p>
+                </div>
+              </div>
+              <dl class="datos-sistema">
+                <div><dt>Versión</dt><dd id="aj-version">—</dd></div>
+                <div><dt>Verificación anti-bots (Turnstile)</dt><dd><span class="badge" id="aj-turnstile">—</span></dd></div>
+                <div><dt>Chequeos programados</dt><dd>GitHub Actions (<code>chequeo-programado.yml</code>)</dd></div>
+                <div><dt>Cierre de sesión por inactividad</dt><dd id="aj-inactividad">—</dd></div>
+              </dl>
+            </article>
           </div>
         </section>
 
@@ -397,5 +456,6 @@
   <script src="assets/js/usuarios.js"></script>
   <script src="assets/js/incidentes.js"></script>
   <script src="assets/js/actividad.js"></script>
+    <script src="assets/js/ajustes.js"></script>
 </body>
 </html>
