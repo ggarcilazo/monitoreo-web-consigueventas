@@ -12,6 +12,7 @@ from app.services.alertas import evaluar_y_alertar, enviar_resumen
 from app.auth import requerir_usuario, requerir_usuario_o_cron
 from collections import defaultdict
 from datetime import datetime, timedelta, timezone
+from app.services.ajustes import umbral_ssl_dias
 
 router = APIRouter(prefix="/chequeos", tags=["Chequeos"])
 
@@ -73,8 +74,7 @@ def ejecutar_chequeo(sitio_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=500, detail=f"Error al guardar el chequeo: {str(e)}")
 
     if hubo_cambio_de_estado(db, sitio.id, resultado_completo["disponible"]):
-        evaluar_y_alertar(sitio.nombre_cliente, sitio.url, resultado_completo)
-
+        evaluar_y_alertar(sitio.nombre_cliente, sitio.url, resultado_completo, umbral_ssl_dias(db))
     return nuevo_chequeo
 
 
@@ -113,8 +113,8 @@ def ejecutar_todos_los_chequeos(db: Session = Depends(get_db)):
             "disponible": resultado_completo["disponible"],
         })
 
-    enviar_resumen(resumen)
-
+    enviar_resumen(resumen, umbral_ssl_dias(db))
+    
     return {
         "total_chequeados": len(resultados),
         "resultados": resultados,

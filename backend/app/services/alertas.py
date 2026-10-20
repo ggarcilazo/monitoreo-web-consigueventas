@@ -9,8 +9,7 @@ def _hora_actual() -> str:
     return datetime.now(ZONA_PERU).strftime("%d/%m/%Y %I:%M %p")
 
 
-def evaluar_y_alertar(sitio_nombre: str, sitio_url: str, resultado: dict) -> list[str]:
-    
+def evaluar_y_alertar(sitio_nombre: str, sitio_url: str, resultado: dict, umbral_ssl_dias: int = 15) -> list[str]:    
     alertas_enviadas = []
     hora = _hora_actual()
 
@@ -57,7 +56,7 @@ def evaluar_y_alertar(sitio_nombre: str, sitio_url: str, resultado: dict) -> lis
             alertas_enviadas.append("sitio_lento")
 
     dias_ssl = resultado.get("ssl_dias_restantes")
-    if dias_ssl is not None and dias_ssl <= 15:
+    if dias_ssl is not None and dias_ssl <= umbral_ssl_dias:
         mensaje = (
             f"⚠️ <b>SSL POR VENCER</b>\n"
             f"━━━━━━━━━━━━━━━━━━━━\n"
@@ -73,11 +72,11 @@ def evaluar_y_alertar(sitio_nombre: str, sitio_url: str, resultado: dict) -> lis
 
     return alertas_enviadas
 
-def enviar_resumen(resultados: list[dict]) -> bool:
+def enviar_resumen(resultados: list[dict], umbral_ssl_dias: int = 15) -> bool:    
     caidos_ahora = [r for r in resultados if not r["disponible"]]
     nuevos_caidos = [r for r in caidos_ahora if r["cambio"]]
     recuperados = [r for r in resultados if r["disponible"] and r["cambio"]]
-    ssl_por_vencer = [r for r in resultados if r["ssl_dias"] is not None and r["ssl_dias"] <= 15 and r["ssl_cambio"]]
+    ssl_por_vencer = [r for r in resultados if r["ssl_dias"] is not None and r["ssl_dias"] <= umbral_ssl_dias and r["ssl_cambio"]]
     if not (nuevos_caidos or recuperados or ssl_por_vencer):
         return False
 

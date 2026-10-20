@@ -17,6 +17,7 @@ from app.schemas.lead_schema import LeadCrear
 from app.services.auditoria_publica import UrlNoPermitida, auditar_url
 from app.services.telegram_bot import enviar_alerta
 from app.services.actividad import registrar
+from app.services.ajustes import diagnostico_activo
 
 router = APIRouter(prefix="/publico", tags=["Público"])
 
@@ -40,7 +41,10 @@ class AuditoriaPedido(BaseModel):
     turnstile: str = Field(default="", max_length=2048)
 
 
-def _verificar_activo() -> None:
+def _verificar_activo(db: Session) -> None:
+    activo, _ = diagnostico_activo(db)
+    if not activo:
+        raise HTTPException(status_code=503, detail="El diagnóstico gratuito no está disponible por el momento.")
     if os.getenv("AUDITORIA_PUBLICA", "off").lower() != "on":
         raise HTTPException(status_code=503, detail="El diagnóstico gratuito no está disponible por el momento.")
 
@@ -146,8 +150,8 @@ def _avisar_lead(lead: Lead) -> None:
 
 
 @router.post("/auditoria")
-def auditoria_publica(datos: AuditoriaPedido, request: Request):
-    _verificar_activo()
+def auditoria_publica(datos: AuditoriaPedido, request: Request, db: Session = Depends(get_db)):
+    _verificar_activo(db)
     _verificar_turnstile(datos.turnstile)
     _limitar(_ip_cliente(request))
     if not _slots.acquire(blocking=False):
@@ -163,7 +167,7 @@ def auditoria_publica(datos: AuditoriaPedido, request: Request):
 
 @router.post("/leads")
 def registrar_lead(datos: LeadCrear, request: Request, db: Session = Depends(get_db)):
-    _verificar_activo()
+    _verificar_activo(db)
     if datos.website.strip():
         return {"ok": True}
     _limitar_leads(_ip_cliente(request))
