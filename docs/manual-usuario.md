@@ -3,8 +3,8 @@
 | | |
 |---|---|
 | **Sistema** | Monitor de sitios web y diagnóstico gratuito · ConsigueVentas |
-| **Versión** | 1.0 |
-| **Fecha** | 14/10/2026 |
+| **Versión** | 2.0 |
+| **Fecha** | 20/10/2026 |
 | **Dirigido a** | Personal de la agencia (administradores y lectores) y visitantes del diagnóstico gratuito |
 
 ---
@@ -13,7 +13,7 @@
 
 Es una herramienta con dos partes:
 
-- **El panel interno**, para el personal de la agencia. Muestra si los sitios web de los clientes están funcionando, cuánto tardan en responder y cuándo vence su certificado de seguridad (SSL). Cuando algo cambia, avisa por Telegram.
+- **El panel interno**, para el personal de la agencia. Muestra si los sitios web de los clientes están funcionando, cuánto tardan en responder y cuándo vence su certificado de seguridad (SSL). Cuando algo cambia, avisa por Telegram. También permite administrar los sitios, los contactos que llegan del diagnóstico, las cuentas de usuario y los ajustes.
 - **El diagnóstico gratuito**, una página abierta para cualquier persona. Quien escribe la dirección de su sitio recibe un puntaje de su estado y, si deja sus datos, un informe completo. Así la agencia consigue contactos de posibles clientes.
 
 ---
@@ -26,13 +26,15 @@ Es una herramienta con dos partes:
 2. Escribe tu **correo electrónico** y tu **contraseña**. Con el icono del ojo puedes ver lo que escribes.
 3. Pulsa **Ingresar**.
 
-Si todo está bien, entrarás al **Panel**. Si ves un aviso en rojo, revisa el apartado de [solución de problemas](#8-solución-de-problemas).
+Si todo está bien, entrarás al **Panel**. Si ves un aviso en rojo, revisa el apartado de [solución de problemas](#9-solución-de-problemas).
 
 > Las cuentas no se crean solas: las crea un administrador. Si necesitas acceso, pídeselo.
 
 ### 2.2 Cómo salir
 
-Pulsa **Salir**, en la parte inferior del menú lateral.
+Pulsa **Salir**, en la parte inferior del menú lateral. La sesión se cierra por completo y no se puede recuperar con el botón «Atrás» del navegador.
+
+**Cierre automático:** si pasas **30 minutos sin usar el panel**, la sesión se cierra sola por seguridad y verás un aviso en la pantalla de inicio de sesión.
 
 ### 2.3 Roles
 
@@ -40,9 +42,11 @@ En el menú lateral, sobre tu correo, aparece una etiqueta con tu rol:
 
 | Etiqueta | Qué puedes hacer |
 |---|---|
-| **ADMINISTRADOR** | Ver el panel y administrar el sistema. |
-| **LECTOR** | Ver el panel. |
-| **SIN ACCESO** | Tu cuenta existe pero no tiene un rol asignado. Pide a un administrador que te lo asigne. |
+| **ADMINISTRADOR** | Ver el panel y los incidentes, y administrar sitios, contactos, usuarios, ajustes y consultar la actividad. |
+| **LECTOR** | Ver el panel (estado de los sitios) y los incidentes. |
+| **SIN ACCESO** | Tu cuenta existe pero no tiene un rol asignado, o está suspendida. Pide a un administrador que lo resuelva. |
+
+El menú muestra solo las secciones que te corresponden.
 
 ---
 
@@ -50,12 +54,15 @@ En el menú lateral, sobre tu correo, aparece una etiqueta con tu rol:
 
 ### 3.1 Menú lateral
 
-A la izquierda están las secciones:
-
-- **Panel:** el estado de todos los sitios. Es la pantalla principal.
-- **Sitios:** administración de los sitios monitoreados. *Próximamente.*
-- **Incidentes:** historial de caídas y su duración. *Próximamente.*
-- **Usuarios:** quién tiene acceso. *Próximamente.*
+| Sección | Quién la ve | Para qué sirve |
+|---|---|---|
+| **Panel** | Todos | Estado de todos los sitios. Es la pantalla principal. |
+| **Sitios** | Todos ven la lista; solo administradores la modifican | Administrar los sitios monitoreados. |
+| **Leads** | Administradores | Contactos que llegan del diagnóstico gratuito. |
+| **Incidentes** | Todos | Historial de caídas y su duración. |
+| **Usuarios** | Administradores | Cuentas y roles. |
+| **Actividad** | Administradores | Registro de quién hizo qué. |
+| **Ajustes** | Administradores | Alertas, diagnóstico público e información del sistema. |
 
 Abajo aparecen tu rol, tu correo y el botón **Salir**.
 
@@ -89,11 +96,13 @@ Cada fila muestra:
 - **SSL:** cuántos días faltan para que venza el certificado.
 - El botón **Chequear ahora**.
 
+Los sitios **en pausa** y los **ocultos** no aparecen en el Panel.
+
 ### 3.5 El detalle de un sitio
 
 Pulsa sobre una fila (en cualquier parte menos el botón) para desplegar el detalle:
 
-- **Disponibilidad:** el porcentaje de chequeos correctos en los últimos 30 días, y entre paréntesis el de 7 días. El anillo es verde si se acerca al 100 %, ámbar si baja del 99,5 % y rojo si baja del 95 %.
+- **Disponibilidad:** el porcentaje de chequeos correctos en los últimos 30 días y, junto a él, el de 7 días. El anillo es verde si se acerca al 100 %, ámbar si baja del 99,5 % y rojo si baja del 95 %.
 - **Tiempo de respuesta:** el promedio y un gráfico con la tendencia de los últimos chequeos.
 - **Última caída:** hace cuánto fue la última vez que el sitio falló, o «Sin caídas» si nunca falló.
 - **Tabla de historial:** los últimos 10 chequeos con fecha, estado, tiempo de respuesta y días de SSL.
@@ -104,7 +113,7 @@ Pulsa otra vez sobre la fila para cerrarlo.
 
 ## 4. Chequear los sitios
 
-Los sitios se revisan solos todos los días. También puedes revisar cuando quieras:
+Los sitios se revisan solos según la programación configurada (hoy, una vez al día). También puedes revisar cuando quieras:
 
 - **Chequear ahora** (en una fila): revisa solo ese sitio y actualiza su estado.
 - **Chequear todos** (arriba a la derecha): revisa todos los sitios activos. Puede tardar unos segundos.
@@ -113,7 +122,97 @@ Los sitios se revisan solos todos los días. También puedes revisar cuando quie
 
 ---
 
-## 5. Alertas por Telegram
+## 5. Administrar sitios (solo administradores)
+
+En **Sitios** ves todos los sitios registrados, incluidos los ocultos y los que están en pausa.
+
+| Columna | Valores |
+|---|---|
+| **Monitoreo** | *Monitoreado* o *En pausa* |
+| **Visibilidad** | *Visible* u *Oculto* |
+
+**Agregar un sitio:** pulsa **+ Agregar sitio**, escribe el nombre del cliente y la dirección (por ejemplo, `tusitio.com`) y guarda. El sistema hace el primer chequeo solo.
+
+**Acciones de cada fila:**
+
+- **Editar:** cambia el nombre o la dirección.
+- **Pausar / Reanudar:** un sitio en pausa deja de chequearse y desaparece del Panel.
+- **Ocultar / Mostrar:** un sitio oculto sigue chequeándose y avisando por Telegram, pero no aparece en el Panel.
+- **Eliminar:** borra el sitio y todo su historial. Pide confirmación y no se puede deshacer.
+
+> Si pausas un sitio mientras está caído, su incidente queda abierto hasta que lo reanudes.
+
+---
+
+## 6. Leads: contactos del diagnóstico gratuito (solo administradores)
+
+En **Leads** aparecen las personas que usaron el diagnóstico gratuito y dejaron sus datos.
+
+**Tarjetas:** total de contactos, nuevos, de los últimos 7 días y puntaje promedio.
+
+**Tabla:** fecha, contacto (nombre, correo y teléfono), sitio analizado, puntaje (verde, ámbar o rojo), **estado** y acciones.
+
+**Estados de seguimiento:** *Nuevo*, *Contactado*, *En proceso*, *Ganado* y *Descartado*. Se cambian directamente desde el menú de cada fila.
+
+**Iconos de acción:**
+
+| Icono | Qué hace |
+|---|---|
+| Ojo | Abre el **detalle**: notas de seguimiento y el informe con **los problemas encontrados en su sitio**, útil para preparar la llamada. |
+| Mensaje | Abre **WhatsApp** con un mensaje ya escrito (solo si dejó teléfono). |
+| Sobre | Abre tu programa de **correo** con un mensaje ya escrito. |
+| Papelera | **Elimina** el contacto y sus datos personales. Pide confirmación. |
+
+**Buscar y filtrar:** por nombre, correo, teléfono o sitio, y por estado.
+
+**Exportar Excel:** descarga un archivo con dos hojas: **Resumen** (fecha, filtro aplicado, cantidad, puntaje promedio y conteo por estado) y **Contactos** (todas las columnas, con colores por puntaje y estado y filtros en cada columna). Exporta lo que esté filtrado en pantalla.
+
+---
+
+## 7. Incidentes, usuarios, actividad y ajustes
+
+### 7.1 Incidentes (todos los roles)
+
+Un **incidente** es una caída: una racha de chequeos fallidos seguidos de un sitio.
+
+- **Tarjetas:** incidentes del periodo, abiertos ahora, recuperación promedio y el sitio con más caídas.
+- **Filtros:** periodo (7, 30 o 90 días), sitio y estado (abiertos o resueltos).
+- **Tabla:** sitio, inicio, fin, duración, código de error, chequeos fallidos y estado. Los abiertos llevan un borde rojo y la leyenda «y contando».
+
+La duración es aproximada: va del primer chequeo fallido al primer chequeo correcto, así que su precisión depende de cada cuánto se revisan los sitios.
+
+### 7.2 Usuarios (solo administradores)
+
+Muestra las cuentas con su rol, su estado (*Activo*, *Suspendido* o *Sin confirmar*), su último acceso y su fecha de creación.
+
+- **Cambiar el rol:** con el menú de la fila (Administrador, Lector o Sin acceso). Puede tardar hasta un minuto en aplicarse.
+- **Suspender / Reactivar:** una cuenta suspendida no puede iniciar sesión y sus sesiones dejan de funcionar en menos de un minuto.
+- **Tu propia cuenta** aparece marcada con «tú» y no se puede modificar desde aquí.
+
+**Cómo agregar a una persona nueva:**
+
+1. En Supabase, entra al proyecto del monitor, a **Authentication → Users → Add user → Create new user**, con **Auto Confirm User** marcado (el botón *Abrir Supabase* de la pantalla te lleva ahí).
+2. La cuenta aparecerá en Usuarios **sin rol**.
+3. Asígnale **Administrador** o **Lector**.
+
+### 7.3 Actividad (solo administradores)
+
+Una línea de tiempo con las acciones de administración: sitios agregados, modificados o eliminados, contactos actualizados o eliminados, cambios de rol y suspensiones, cambios de ajustes y los nuevos contactos del diagnóstico. Cada evento muestra quién lo hizo y a qué hora.
+
+- **Filtros:** periodo, tipo (sitios, leads, usuarios, ajustes) y buscador.
+- Los contactos se registran solo por su número, sin datos personales.
+
+### 7.4 Ajustes (solo administradores)
+
+- **Diagnóstico público:** interruptor para encender o apagar la página de análisis gratuito. Si está apagada, la página avisa que el servicio no está disponible.
+- **Alertas por Telegram:** el número de días de aviso del certificado SSL (de 1 a 60, por defecto 15) y el botón **Enviar mensaje de prueba**, para comprobar que las alertas llegan.
+- **Sistema:** versión, estado de la verificación anti-bots, cómo se programan los chequeos y el tiempo de cierre por inactividad.
+
+---
+
+## 8. Alertas por Telegram y diagnóstico gratuito
+
+### 8.1 Alertas por Telegram
 
 El sistema envía mensajes al grupo o chat configurado. Solo avisa cuando **algo cambia**, para no llenar el chat de mensajes repetidos.
 
@@ -121,17 +220,14 @@ El sistema envía mensajes al grupo o chat configurado. Solo avisa cuando **algo
 |---|---|
 | **Monitor ConsigueVentas** con lista de «Cayeron» | Uno o más sitios dejaron de responder. Aparece el nombre y el código de error. |
 | Lista de «Recuperados» | Sitios que estaban caídos y volvieron. |
-| Lista de «SSL por vencer» | Sitios cuyo certificado vence en 15 días o menos. Hay que renovarlo. |
-| **SITIO LENTO** | Un sitio tardó más de 3 segundos en responder (solo con «Chequear ahora»). |
+| Lista de «SSL por vencer» | Sitios cuyo certificado vence en los días configurados o menos. Hay que renovarlo. |
+| **SITIO LENTO** | Un sitio tardó más de 3 segundos en responder (en el chequeo individual). |
 | **NUEVO LEAD** | Alguien usó el diagnóstico gratuito y dejó sus datos. Incluye nombre, correo, teléfono, sitio y puntaje. |
+| **Mensaje de prueba** | Enviado desde Ajustes para comprobar que las alertas llegan. |
 
 Cuando no hay novedades, no llega ningún mensaje. Eso es buena señal.
 
----
-
-## 6. El diagnóstico gratuito
-
-### 6.1 Para quien analiza su sitio
+### 8.2 El diagnóstico gratuito, para quien analiza su sitio
 
 1. Escribe la dirección de tu sitio (por ejemplo, `tusitio.com`).
 2. Espera a que el recuadro de verificación de Cloudflare muestre el visto.
@@ -150,50 +246,32 @@ Cada tarjeta se marca como **Bien** (80 o más), **Mejorable** (50 a 79) o **Cr�
 
 5. Para ver el **informe completo**, deja tu nombre, tu correo y, si quieres, tu teléfono o WhatsApp, y acepta el uso de tus datos. Verás cada punto revisado y, en los que fallan, **por qué importa** y **cómo corregirlo**.
 
-El diagnóstico es automático e informativo: observa lo que cualquier visitante ve, no entra al interior de tu sitio ni lo modifica.
-
-### 6.2 Límites de uso
-
-Para evitar abusos hay un máximo de análisis por hora desde una misma conexión. Si aparece el aviso «Hiciste muchos análisis seguidos», espera un rato e inténtalo otra vez.
-
-### 6.3 Para la agencia: dónde ver los leads
-
-Cada persona que deja sus datos genera:
-
-1. Un mensaje **NUEVO LEAD** en Telegram.
-2. Un registro en la tabla `leads` de la base de datos (Supabase → **Table Editor** → `leads`).
-
-*La sección Leads del panel, para verlos y darles seguimiento desde ahí, está en desarrollo.*
+El diagnóstico es automático e informativo: observa lo que cualquier visitante ve, no entra al interior de tu sitio ni lo modifica. Hay un máximo de análisis por hora desde una misma conexión; si aparece el aviso «Hiciste muchos análisis seguidos», espera un rato e inténtalo otra vez.
 
 ---
 
-## 7. Tareas del administrador técnico
+## 9. Solución de problemas
 
-### 7.1 Crear un usuario y asignarle un rol
+| Qué ves | Qué significa | Qué hacer |
+|---|---|---|
+| «Correo o contraseña incorrectos» | Los datos no coinciden con una cuenta. | Revisa mayúsculas y que la cuenta exista. Si olvidaste la clave, pide al administrador que la restablezca. |
+| «Tu cuenta está suspendida» | Un administrador suspendió la cuenta. | Contacta a un administrador. |
+| «Tu sesión se cerró por inactividad» | Pasaron 30 minutos sin usar el panel. | Vuelve a ingresar. |
+| «Tu sesión expiró» | La sesión ya no es válida. | Vuelve a ingresar. |
+| «Tu cuenta no tiene acceso a este panel» | La cuenta existe, pero no tiene rol. | Pide a un administrador que te asigne un rol. |
+| «Solo los administradores pueden ver…» | Tu rol no permite ver esa sección. | Pide el acceso a un administrador si lo necesitas. |
+| «No se pudo conectar con el servidor» | El panel no logra comunicarse con el servidor. | Recarga con Ctrl+F5. Si sigue, avisa al administrador técnico. |
+| Un sitio sale «Caído» pero abre en el navegador | El hosting puede estar rechazando las visitas automáticas. | Avisa al administrador técnico. |
+| «Hiciste muchos análisis seguidos» | Se alcanzó el límite del diagnóstico gratuito. | Espera un rato e inténtalo de nuevo. |
+| «No pasaste la verificación de seguridad» | El control anti-bots no se completó. | Recarga la página y espera a que aparezca el visto. |
+| «El análisis expiró» | Pasó más de una hora desde el análisis. | Analiza tu sitio otra vez. |
+| «El diagnóstico gratuito no está disponible por el momento» | Un administrador lo apagó. | Inténtalo más tarde. |
 
-1. En Supabase, entra al proyecto del monitor, a **Authentication → Users → Add user → Create new user**.
-2. Escribe el correo y una contraseña, y marca **Auto Confirm User**.
-3. En el **SQL Editor** del mismo proyecto, asigna el rol (`admin` o `lector`):
+---
 
-```sql
-UPDATE auth.users
-SET raw_app_meta_data = COALESCE(raw_app_meta_data, '{}'::jsonb) || '{"rol": "lector"}'::jsonb
-WHERE lower(email) = lower('correo@ejemplo.com');
-```
+## 10. Tareas del administrador técnico
 
-4. Comprueba el resultado:
-
-```sql
-SELECT email, raw_app_meta_data->>'rol' AS rol FROM auth.users ORDER BY created_at;
-```
-
-El cambio de rol puede tardar hasta un minuto en notarse. Para quitar el acceso a alguien, elimina su usuario desde Supabase.
-
-### 7.2 Encender o apagar el diagnóstico público
-
-En el archivo `.env` del servidor, la variable `AUDITORIA_PUBLICA` vale `on` (encendido) u `off` (apagado). Después de cambiarla hay que volver a crear el contenedor del backend.
-
-### 7.3 Cambiar la frecuencia de los chequeos automáticos
+### 10.1 Cambiar la frecuencia de los chequeos automáticos
 
 En el archivo `.github/workflows/chequeo-programado.yml` está la línea `cron`:
 
@@ -206,32 +284,35 @@ En el archivo `.github/workflows/chequeo-programado.yml` está la línea `cron`:
 
 > En repositorios privados, GitHub ofrece una cantidad limitada de minutos gratuitos por mes. Las frecuencias muy altas pueden agotarla.
 
-### 7.4 Agregar o eliminar sitios
+### 10.2 Actualizar el servidor
 
-Mientras la sección **Sitios** está en desarrollo, el alta, el ocultamiento y la eliminación de sitios los realiza el administrador técnico a través de la API (documentación en `/api/docs`).
+Después de subir cambios al repositorio, en la VM:
+
+```bash
+cd ~/monitoreo-web-consigueventas && git pull && cd backend
+docker build -t monitoreo-backend .
+docker rm -f monitoreo-backend
+docker run -d --name monitoreo-backend --restart unless-stopped --memory="200m" --memory-swap="400m" -p 127.0.0.1:8001:8000 --env-file .env -e ROOT_PATH=/api monitoreo-backend
+```
+
+Si el cambio incluye una migración de base de datos, se aplica antes desde el equipo de desarrollo con `alembic upgrade head`.
+
+### 10.3 Variables de entorno
+
+Los nombres de las variables están en `backend/.env.example`. Los valores reales viven solo en el archivo `.env` del servidor, que no se sube al repositorio.
+
+### 10.4 Certificado del servidor
+
+Certbot renueva el certificado de forma automática y, al terminar, reinicia nginx para aplicarlo. Para comprobar el estado: `sudo certbot certificates`.
 
 ---
 
-## 8. Solución de problemas
-
-| Qué ves | Qué significa | Qué hacer |
-|---|---|---|
-| «Correo o contraseña incorrectos» | Los datos no coinciden con una cuenta. | Revisa mayúsculas y que la cuenta exista. Si olvidaste la clave, pide al administrador que la restablezca. |
-| «Tu cuenta no tiene acceso a este panel» | La cuenta existe, pero no tiene rol. | Pide a un administrador que te asigne un rol. |
-| «No se pudo conectar con el servidor» | El panel no logra comunicarse con el servidor. | Recarga con Ctrl+F5. Si sigue, avisa al administrador técnico. |
-| Un sitio sale «Caído» pero abre en el navegador | El hosting puede estar rechazando las visitas automáticas. | Avisa al administrador técnico. |
-| «Hiciste muchos análisis seguidos» | Se alcanzó el límite del diagnóstico gratuito. | Espera un rato e inténtalo de nuevo. |
-| «No pasaste la verificación de seguridad» | El control anti-bots no se completó. | Recarga la página y espera a que aparezca el visto. |
-| «El análisis expiró» | Pasó más de una hora desde el análisis. | Analiza tu sitio otra vez. |
-| «El diagnóstico gratuito no está disponible por el momento» | El administrador lo apagó. | Inténtalo más tarde. |
-
----
-
-## 9. Glosario
+## 11. Glosario
 
 | Término | Significado |
 |---|---|
 | **Disponibilidad (uptime)** | Porcentaje del tiempo en que un sitio respondió correctamente. |
+| **Incidente** | Caída de un sitio: una racha de chequeos fallidos seguidos. |
 | **HTTP / código de respuesta** | Número con el que un sitio contesta una visita. 200 es correcto; 403 es acceso rechazado; 500 es error del sitio. |
 | **SSL / HTTPS** | Cifrado que protege la conexión y muestra el candado en el navegador. El certificado vence y hay que renovarlo. |
 | **Tiempo de respuesta** | Lo que tarda el sitio en empezar a contestar. |
@@ -242,3 +323,4 @@ Mientras la sección **Sitios** está en desarrollo, el alta, el ocultamiento y 
 | **Sitemap / robots.txt** | Archivos que le indican a Google qué páginas puede revisar. |
 | **Lead** | Persona interesada que deja sus datos para que la agencia la contacte. |
 | **Rol** | Permiso que define lo que cada usuario puede hacer en el panel. |
+| **Suspender** | Bloquear una cuenta sin borrarla; se puede reactivar. |

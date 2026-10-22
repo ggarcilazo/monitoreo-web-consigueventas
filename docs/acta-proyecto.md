@@ -14,13 +14,13 @@
 | **Marco de gestión** | PMI: Inicio, Planificación, Ejecución, Monitoreo y Control, Cierre |
 | **Metodología de desarrollo** | Cascada, dentro de la fase de Ejecución |
 | **Duración** | 12 semanas (3 meses) |
-| **Fecha de inicio** | **[COMPLETAR]** |
-| **Fecha de cierre prevista** | **[COMPLETAR]** |
-| **Patrocinador / representante de la empresa** | **[COMPLETAR]** |
-| **Supervisor en la empresa** | **[COMPLETAR]** |
-| **Docente asesor** | **[COMPLETAR]** |
+| **Fecha de inicio** | 22/09/2026 |
+| **Fecha de cierre prevista** | 22/10/2026 |
+| **Patrocinador / representante de la empresa** | Jhoel Fernandez Alvarado |
+| **Supervisor en la empresa** | Martin Alonso Puertas Cuadros |
+| **Docente asesor** | - |
 | **Repositorio** | https://github.com/ggarcilazo/monitoreo-web-consigueventas |
-| **Versión del documento** | 1.0 · 14/10/2026 |
+| **Versión del documento** | 2.0 · 20/10/2026 |
 
 ---
 
@@ -38,7 +38,7 @@ El practicante trabajó previamente en la misma agencia, en el equipo de desarro
 
 Sistema web compuesto por dos módulos:
 
-1. **Monitoreo interno.** Revisa periódicamente los sitios registrados (disponibilidad, certificado SSL y tiempo de respuesta), guarda el historial, lo presenta en un panel con acceso restringido por roles y envía alertas por Telegram ante cambios de estado.
+1. **Panel interno de monitoreo.** Revisa periódicamente los sitios registrados (disponibilidad, certificado SSL y tiempo de respuesta), guarda el historial, calcula la disponibilidad y las caídas, y envía alertas por Telegram ante cambios de estado. Tiene acceso restringido por cuenta y por rol (administrador y lector) y permite administrar sitios, contactos, usuarios y ajustes, con un registro de la actividad.
 2. **Diagnóstico público con captación de leads.** Página abierta en la que cualquier persona analiza su sitio y obtiene un puntaje en cinco categorías (disponibilidad, SSL, velocidad, seguridad, SEO y móvil). Para recibir el informe completo deja sus datos, que se registran como leads y se notifican a la agencia.
 
 Todo el sistema opera con **costo cero**, sobre planes gratuitos, y realiza únicamente revisiones pasivas desde el exterior.
@@ -55,8 +55,8 @@ Desarrollar e implementar un sistema web que permita diagnosticar y monitorear d
 
 1. Analizar los requerimientos de monitoreo y de captación de clientes de la agencia.
 2. Diseñar una arquitectura de costo cero para el backend, la base de datos, el frontend, las alertas y el despliegue.
-3. Implementar el monitoreo periódico de disponibilidad, SSL y tiempo de respuesta, con historial y alertas por Telegram.
-4. Implementar un panel web con autenticación y control de acceso por roles.
+3. Implementar el monitoreo periódico de disponibilidad, SSL y tiempo de respuesta, con historial, incidentes y alertas por Telegram.
+4. Implementar un panel web con autenticación, control de acceso por roles, gestión de sitios, contactos y usuarios, y registro de actividad.
 5. Implementar el diagnóstico público con captación de leads y protecciones contra abuso.
 6. Desplegar el sistema en línea y estabilizarlo, con automatización de los chequeos.
 7. Verificar el funcionamiento con pruebas y documentar el sistema.
@@ -67,13 +67,15 @@ Desarrollar e implementar un sistema web que permita diagnosticar y monitorear d
 
 ### 5.1 Incluido
 
-- Backend (API) en Python con FastAPI, y base de datos PostgreSQL en Supabase.
-- Chequeos de disponibilidad, SSL y velocidad; historial; programación automática.
+- Backend (API) en Python con FastAPI, y base de datos PostgreSQL en Supabase con migraciones.
+- Chequeos de disponibilidad, SSL y velocidad; historial; disponibilidad a 7 y 30 días; incidentes; programación automática.
 - Alertas por Telegram con resumen único y solo ante cambios.
-- Panel web con inicio de sesión, roles (administrador y lector), búsqueda, filtros, disponibilidad a 7 y 30 días y detalle por sitio.
+- Panel web con inicio de sesión, roles, búsqueda, filtros y detalle por sitio.
+- Gestión desde el panel de sitios, leads (con exportación a Excel), usuarios y ajustes, y registro de actividad.
+- Seguridad de la sesión: cierre seguro y cierre por inactividad.
 - Página pública de diagnóstico con puntaje, informe completo para quien deja sus datos y protección contra bots.
 - Despliegue con Docker y nginx con HTTPS en una VM de Oracle Cloud, y frontend en Cloudflare.
-- Documentación: requerimientos, manual de usuario y esta acta.
+- Documentación: requerimientos, manual de usuario, plan de pruebas y esta acta.
 
 ### 5.2 Fuera del alcance
 
@@ -82,9 +84,9 @@ Desarrollar e implementar un sistema web que permita diagnosticar y monitorear d
 - Aplicaciones móviles nativas.
 - Contratación de dominios, servidores o servicios de pago.
 
-### 5.3 Pendiente de incorporar
+### 5.3 Mejoras previstas
 
-Secciones Sitios, Leads, Incidentes y Usuarios del panel, integración con PageSpeed Insights, revisión de seguridad del correo (SPF y DMARC), informe en PDF, política de privacidad y dominio propio.
+Política de privacidad, dominio propio, integración con PageSpeed Insights, revisión de seguridad del correo (SPF y DMARC), informe en PDF, revisión de enlaces rotos, pruebas automáticas con integración continua y actualización del sistema operativo del servidor.
 
 ---
 
@@ -95,11 +97,11 @@ Secciones Sitios, Leads, Incidentes y Usuarios del panel, integración con PageS
 | 1 | API de monitoreo y base de datos con migraciones | ✅ |
 | 2 | Servicio de chequeos programados (GitHub Actions) | ✅ |
 | 3 | Alertas por Telegram | ✅ |
-| 4 | Panel web con autenticación y roles | ✅ |
+| 4 | Panel web con autenticación, roles y secciones de administración | ✅ |
 | 5 | Página pública de diagnóstico con captación de leads | ✅ |
 | 6 | Despliegue en línea (Docker, nginx, HTTPS, Cloudflare) | ✅ |
-| 7 | Documentación (requerimientos, manual de usuario, acta) | 🟡 En elaboración |
-| 8 | Secciones restantes del panel y mejoras del diagnóstico | ⏳ |
+| 7 | Documentación: requerimientos, manual de usuario y plan de pruebas | ✅ |
+| 8 | Acta de constitución | 🟡 Faltan datos por completar |
 | 9 | Informe final de prácticas | ⏳ |
 
 ---
@@ -179,11 +181,14 @@ El recurso principal es el tiempo del practicante durante las 12 semanas.
 
 | Riesgo | Prob. | Impacto | Respuesta |
 |---|---|---|---|
-| Falsos positivos: hostings que bloquean las visitas automáticas | Alta | Media | Enviar cabeceras de navegador; distinguir «bloqueo» de «caída»; avisar al administrador. |
-| Abuso del diagnóstico público (bots, spam, uso del servidor para atacar terceros) | Media | Alta | CAPTCHA, límites por IP, bloqueo de direcciones internas, topes de descarga e interruptor para apagarlo. |
+| Falsos positivos: hostings que bloquean las visitas automáticas | Alta | Media | Enviar cabeceras de navegador; distinguir «bloqueo» de «caída»; avisar al administrador. *Ocurrió y se corrigió.* |
+| Abuso del diagnóstico público (bots, spam, uso del servidor para atacar terceros) | Media | Alta | CAPTCHA, límites por IP, bloqueo de direcciones internas, topes de descarga e interruptor para apagarlo desde el panel. |
 | Dominios gratuitos marcados como «peligrosos» por el navegador | Media | Media | Un dominio propio de la agencia; mientras tanto, solicitar revisión a Google. |
-| Tratamiento de datos personales sin cumplir la normativa | Media | Alta | Consentimiento explícito, datos mínimos, política de privacidad y revisión con la agencia de la Ley N.° 29733. |
-| Exposición accidental de secretos | Media | Alta | Secretos en variables de entorno y GitHub Secrets; rotación inmediata si se exponen. |
+| Tratamiento de datos personales sin cumplir la normativa | Media | Alta | Consentimiento explícito, datos mínimos, registro de actividad sin datos personales, eliminación de leads, política de privacidad y revisión con la agencia de la Ley N.° 29733. |
+| Exposición accidental de secretos | Media | Alta | Secretos en variables de entorno y GitHub Secrets; rotación inmediata si se exponen. *Ocurrió una vez con la clave del proceso programado y se rotó.* |
+| Acceso no autorizado al panel | Baja | Alta | Roles, suspensión de cuentas, cierre de sesión seguro y por inactividad, y registro de actividad. |
+| Certificado del servidor vencido | Media | Alta | Renovación automática que reinicia nginx. *Ocurrió una vez y se corrigió.* |
+| Sistema operativo del servidor sin soporte estándar (Ubuntu 20.04) | Media | Media | Aplicar las actualizaciones disponibles, evaluar Ubuntu Pro (ESM) y planificar la actualización de versión con una copia previa. |
 | Agotar los límites de los planes gratuitos | Baja | Media | Chequeos diarios; revisar el consumo; opción de reducir la frecuencia. |
 | Falla o cambio de IP del servidor | Baja | Alta | Reinicio automático del contenedor; DNS dinámico; documentación para reconstruir. |
 | Pérdida de datos | Baja | Alta | Migraciones versionadas y copias periódicas de la base de datos. |
@@ -197,12 +202,13 @@ El recurso principal es el tiempo del practicante durante las 12 semanas.
 |---|---|
 | El monitoreo detecta caídas y vencimientos de SSL | Cada sitio se chequea en el intervalo programado y se alerta ante cambios. |
 | Las alertas son útiles | Un solo mensaje por ronda y ninguno si no hay novedades. |
-| El panel es seguro | Todas las rutas internas exigen sesión y rol; sin rol no hay acceso. |
+| El panel es seguro | Todas las rutas internas exigen sesión y rol; sin rol no hay acceso; las acciones de escritura exigen administrador. |
 | El diagnóstico es ágil | El análisis de un sitio se completa en menos de 10 segundos. |
-| Se captan leads | Cada contacto queda registrado y notificado a la agencia. |
+| Se captan leads | Cada contacto queda registrado, notificado a la agencia y gestionable desde el panel. |
+| Se puede auditar | Las acciones de administración quedan en el registro de actividad. |
 | Costo cero | Ningún componente genera cargos. |
 | Disponibilidad en línea | El sistema funciona sin depender del equipo del practicante. |
-| Documentación | Requerimientos, manual de usuario y acta entregados. |
+| Documentación y pruebas | Requerimientos, manual de usuario, plan de pruebas y acta entregados. |
 
 ---
 
